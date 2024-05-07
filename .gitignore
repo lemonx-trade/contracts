@@ -1,0 +1,22 @@
+# Compiler files
+cache/
+out/
+
+# Ignores development broadcast logs
+
+/broadcast
+/broadcast/*/31337/
+/broadcast/**/dry-run/
+/node_modules
+
+# Docs
+docs/
+flatten-files/
+
+# Dotenv file
+.DS_Store
+
+test/debugHelper.t.sol
+
+lcov.info
+
