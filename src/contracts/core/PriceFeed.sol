@@ -50,10 +50,12 @@ contract PriceFeed is IPriceFeed, Governable {
         require(updater[msg.sender], "PriceFeed: sender does not have entitlements to update price");
         _;
     }
+    // TODO: M2 check for isContract
 
     function setOrderManager(address _orderManager) external onlyGov {
         orderManager = IOrderManager(_orderManager);
     }
+    // TODO: M2 check for isContract
 
     function setRewardRouter(address _rewardRouter) external onlyGov {
         rewardRouter = IRewardRouter(_rewardRouter);
@@ -66,14 +68,17 @@ contract PriceFeed is IPriceFeed, Governable {
     function removeUpdater(address _updater) external onlyGov {
         updater[_updater] = false;
     }
+    // TODO: M3 missing for threshold
 
     function setMaxAllowedDelay(uint256 _maxAllowedDelay) external onlyGov {
         maxAllowedDelay = _maxAllowedDelay;
     }
+    // TODO: M3 missing for threshold
 
     function setMaxAllowedDelta(uint256 _maxAllowedDelta) external onlyGov {
         maxAllowedDelta = _maxAllowedDelta;
     }
+    // TODO: M3 missing for threshold
 
     function setSlippage(address _indexToken, uint256 _slippage) external onlyGov {
         slippage[_indexToken] = _slippage;

@@ -68,6 +68,7 @@ contract LlpManager is ReentrancyGuard, Governable, ILlpManager {
         cooldownDuration = _cooldownDuration;
         maxPoolValue = _maxPoolValue;
     }
+    // TODO: M2 check for isContract
 
     function setUtils(address _utils) external onlyGov {
         utils = IUtils(_utils);
@@ -84,6 +85,7 @@ contract LlpManager is ReentrancyGuard, Governable, ILlpManager {
     function removeFromWhiteListToken(address token) public onlyGov {
         whiteListedTokens[token] = false;
     }
+    // TODO: M3 missing threshold
 
     function setMaxPoolValue(uint256 _maxPoolValue) public onlyGov {
         maxPoolValue = _maxPoolValue;
@@ -93,14 +95,17 @@ contract LlpManager is ReentrancyGuard, Governable, ILlpManager {
         require(_cooldownDuration <= MAX_COOLDOWN_DURATION, "LlpManager: invalid _cooldownDuration");
         cooldownDuration = _cooldownDuration;
     }
+    // TODO: M2 check for isContract
 
     function setVault(address _vault) external onlyGov {
         vault = IVault(_vault);
     }
+    // TODO: M2 check for isContract
 
     function setUsdl(address _usdl) external onlyGov {
         usdl = _usdl;
     }
+    // TODO: M2 check for isContract
 
     function setLlp(address _llp) external onlyGov {
         llp = _llp;

@@ -69,6 +69,7 @@ contract RewardTracker is IERC20, ReentrancyGuard, IRewardTracker, Governable {
     function setDepositToken(address _depositToken, bool _isDepositToken) external onlyGov {
         isDepositToken[_depositToken] = _isDepositToken;
     }
+    // TODO: M3 missing for threshold
 
     function setRewardPrecision(uint256 _rewardPrecision) public onlyGov {
         rewardPrecision = _rewardPrecision;
@@ -77,6 +78,7 @@ contract RewardTracker is IERC20, ReentrancyGuard, IRewardTracker, Governable {
     function setHandler(address _handler, bool _isActive) external onlyGov {
         isHandler[_handler] = _isActive;
     }
+    // TODO: M3 missing for threshold
 
     function setCummulativeRewardRate(uint256 _cummulativeRewardPerLPToken) public onlyGov {
         cummulativeRewardPerLPToken = _cummulativeRewardPerLPToken;

@@ -54,66 +54,82 @@ contract Utils is IUtils, Governable {
         priceFeed = _pricefeed;
         tierBasedTradingFees = ITierBasedTradingFees(_tierBasedTradingFees);
     }
+    // TODO: M3 missing for threshold
 
     function setTier1Size(uint256 _tier1Size) external onlyGov {
         tier1Size = _tier1Size;
     }
+    // TODO: M3 missing for threshold
 
     function setTier2Size(uint256 _tier2Size) external onlyGov {
         tier2Size = _tier2Size;
     }
+    // TODO: M3 missing for threshold
 
     function setTier3Size(uint256 _tier3Size) external onlyGov {
         tier3Size = _tier3Size;
     }
+    // TODO: M3 missing for threshold
 
     function setTier1Factor(uint256 _tier1Factor) external onlyGov {
         tier1Factor = _tier1Factor;
     }
+    // TODO: M3 missing for threshold
 
     function setTier2Factor(uint256 _tier2Factor) external onlyGov {
         tier2Factor = _tier2Factor;
     }
+    // TODO: M3 missing for threshold
 
     function setTier3Factor(uint256 _tier3Factor) external onlyGov {
         tier3Factor = _tier3Factor;
     }
+    // TODO: M3 missing for threshold
 
     function setTierBorrowingRateFactor(uint256 _tierBorrowingRateFactor) external onlyGov {
         tierBorrowingRateFactor = _tierBorrowingRateFactor;
     }
+    // TODO: M3 missing for threshold
 
     function setFundingFactorForLessOISide(int256 _fundingFactorForLessOISide) external onlyGov {
         fundingFactorForLessOISide = _fundingFactorForLessOISide;
     }
+    // TODO: M3 missing for threshold
 
     function setFundingFactorForHighOISide(int256 _fundingFactorForHighOISide) external onlyGov {
         fundingFactorForHighOISide = _fundingFactorForHighOISide;
     }
+    // TODO: M2 check for isContract
 
     function setTierBasedTradingFees(address _tierBasedTradingFees) external onlyGov {
         tierBasedTradingFees = ITierBasedTradingFees(_tierBasedTradingFees);
     }
+    // TODO: M2 check for isContract
 
     function setVault(IVault _vault) external onlyGov {
         vault = _vault;
     }
+    // TODO: M2 check for isContract
 
     function setPriceFeed(address _pricefeed) external onlyGov {
         priceFeed = IPriceFeed(_pricefeed);
     }
+    // TODO: M3 missing for threshold
 
     function setBorrowingRatePrecision(uint256 _precision) external onlyGov {
         BORROWING_RATE_PRECISION = _precision;
     }
+    // TODO: M3 missing for threshold
 
     function setFundingRatePrecision(int256 _precision) external onlyGov {
         FUNDING_RATE_PRECISION = _precision;
     }
+    // TODO: M3 missing for threshold
 
     function setTierBorrowingRateStartTime(uint256 _tierBorrowingRateStartTime) external onlyGov {
         tierBorrowingRateStartTime = _tierBorrowingRateStartTime;
     }
+    // TODO: M3 missing for threshold
 
     function setMaintanenceMargin(address _indexToken, uint256 _maintanenceMargin) external onlyGov {
         maintanenceMargin[_indexToken] = _maintanenceMargin;

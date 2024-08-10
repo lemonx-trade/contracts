@@ -40,18 +40,22 @@ contract BaseOrderManager {
         admin = msg.sender;
         depositFee = _depositFee;
     }
+    // TODO: M2 check for isContract ? -> do we need to update it
 
     function setAdmin(address _admin) external onlyAdmin {
         admin = _admin;
     }
+    // TODO: M2 check for isContract
 
     function setVault(address _vault) external onlyAdmin {
         vault = _vault;
     }
+    // TODO: M2 check for isContract
 
     function setUtils(address _utils) external onlyAdmin {
         utils = _utils;
     }
+    // TODO: M1 ensure less than 25% update
 
     function setDepositFee(uint256 _fee) external onlyAdmin {
         depositFee = _fee;

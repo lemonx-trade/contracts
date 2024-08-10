@@ -222,6 +222,7 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
         require(isOrderKeeper[msg.sender], "OM:403");
         _;
     }
+    // TODO: M3 missing for threshold
 
     function setMinPurchaseAmount(uint256 _marketOrder, uint256 _limitOrder) external onlyAdmin {
         minPurchaseUSDAmountMarketOrder = _marketOrder;
@@ -232,10 +233,12 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
         isPositionKeeper[_account] = _isActive;
         emit SetPositionKeeper(_account, _isActive);
     }
+    // TODO: M3 missing for threshold
 
     function setMaxTPMultiplier(uint256 _maxProfitMultiplier) external onlyAdmin {
         maxProfitMultiplier = _maxProfitMultiplier;
     }
+    // TODO: M3 missing for threshold
 
     function setMinExecutionFeeMarketOrder(
         uint256 _minExecutionFeeIncreaseMarketOrder,
@@ -244,6 +247,7 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
         minExecutionFeeIncreaseMarketOrder = _minExecutionFeeIncreaseMarketOrder;
         minExecutionFeeDecreaseMarketOrder = _minExecutionFeeDecreaseMarketOrder;
     }
+    // TODO: M3 missing for threshold
 
     function setMinExecutionFeeLimitOrder(
         uint256 _minExecutionFeeIncreaseLimitOrder,
@@ -252,10 +256,12 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
         minExecutionFeeIncreaseLimitOrder = _minExecutionFeeIncreaseLimitOrder;
         minExecutionFeeDecreaseLimitOrder = _minExecutionFeeDecreaseLimitOrder;
     }
+    // TODO: M3 missing for threshold
 
     function setPriceFeed(address _priceFeed) external override onlyAdmin {
         pricefeed = _priceFeed;
     }
+    // TODO: M3 missing for threshold
 
     function setDelayValues(uint256 _minBlockDelayKeeper, uint256 _minTimeDelayPublic, uint256 _maxTimeDelay)
         external

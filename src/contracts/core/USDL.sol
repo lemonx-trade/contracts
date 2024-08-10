@@ -16,10 +16,12 @@ contract USDL is YieldToken, IUSDL {
     constructor(address _vault) YieldToken("USD LemonX", "USDL", 0) {
         vaults[_vault] = true;
     }
+    // TODO: M2 check for isContract
 
     function addVault(address _vault) external override onlyGov {
         vaults[_vault] = true;
     }
+    // TODO: M2 check for isContract
 
     function removeVault(address _vault) external override onlyGov {
         vaults[_vault] = false;

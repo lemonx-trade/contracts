@@ -184,6 +184,7 @@ contract Vault is ReentrancyGuard, IVault {
         liquidationFeeUsd = _liquidationFeeUsd;
         liquidationFactor = _liquidationFactor;
     }
+    // TODO: M2 check for isContract
 
     function setUtils(address _utils) external override {
         _onlyGov();
@@ -204,11 +205,13 @@ contract Vault is ReentrancyGuard, IVault {
         _onlyGov();
         ceaseLPActivity = _cease;
     }
+    // TODO: M2 check for isContract
 
     function setOrderManager(address newOrderManager, bool _isOrderManager) external {
         _onlyGov();
         orderManagers[newOrderManager] = _isOrderManager;
     }
+    // TODO: M2 check for isContract
 
     function setUsdl(address newUsdl) external {
         _onlyGov();
@@ -256,6 +259,7 @@ contract Vault is ReentrancyGuard, IVault {
         _onlyGov();
         maxGasPrice = _maxGasPrice;
     }
+    // TODO: M2 check for isContract
 
     function setPriceFeed(address _priceFeed) external override {
         _onlyGov();
@@ -292,6 +296,7 @@ contract Vault is ReentrancyGuard, IVault {
         _onlyGov();
         maxGlobalLongSizesBps[_token] = _amount;
     }
+    // TODO: M1 ensure less than 25% update
 
     function setFees(
         uint256 _mintBurnFeeBasisPoints,
