@@ -100,17 +100,17 @@ contract ReaderContract is Governable {
     function setTierBorrowingRateStartTime(uint256 _tierBorrowingRateStartTime) external onlyGov {
         tierBorrowingRateStartTime = _tierBorrowingRateStartTime;
     }
-    // TODO: M2 check for isContract
+    // M2 check for isContract
 
     function setVault(address _vault) public onlyGov isContract(_vault) {
         vault = IVault(_vault);
     }
-    // TODO: M2 check for isContract
+    //  M2 check for isContract
 
     function setUtils(address _utils) public onlyGov isContract(_utils) {
         utils = IUtils(_utils);
     }
-    // TODO: M2 check for isContract
+    //  M2 check for isContract
 
     function setUsdc(address _usdc) public onlyGov isContract(_usdc) {
         usdc = IERC20(_usdc);

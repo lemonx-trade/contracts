@@ -56,13 +56,13 @@ contract BaseOrderManager {
     function setAdmin(address _admin) external onlyAdmin {
         admin = _admin;
     }
-    // TODO: M2 check for isContract
+    //  M2 check for isContract
     // TODO: L1 missing events
 
     function setVault(address _vault) external onlyAdmin isContract(_vault) {
         vault = _vault;
     }
-    // TODO: M2 check for isContract
+    //  M2 check for isContract
     // TODO: L1 missing events
 
     function setUtils(address _utils) external onlyAdmin isContract(_utils) {

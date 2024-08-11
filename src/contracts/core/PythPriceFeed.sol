@@ -65,13 +65,13 @@ contract PythPriceFeed is IPriceFeed, Governable {
         require(updater[msg.sender], "PriceFeed: sender does not have entitlements to update price");
         _;
     }
-    // TODO: M2 check for isContract
+    //  M2 check for isContract
     // TODO: L1 missing events
 
     function setOrderManager(address _orderManager) external onlyGov isContract(_orderManager) {
         orderManager = IOrderManager(_orderManager);
     }
-    // TODO: M2 check for isContract
+    //  M2 check for isContract
     // TODO: L1 missing events
 
     function setRewardRouter(address _rewardRouter) external onlyGov isContract(_rewardRouter) {
@@ -85,7 +85,7 @@ contract PythPriceFeed is IPriceFeed, Governable {
     function removeUpdater(address _updater) external onlyGov {
         updater[_updater] = false;
     }
-    // TODO: M2 check for isContract
+    // M2 check for isContract
     // TODO: L1 missing events
 
     function setPythContract(address _pythContract) external onlyGov isContract(_pythContract) {

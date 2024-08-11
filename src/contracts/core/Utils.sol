@@ -109,7 +109,7 @@ contract Utils is IUtils, Governable {
     function setFundingFactorForHighOISide(int256 _fundingFactorForHighOISide) external onlyGov {
         fundingFactorForHighOISide = _fundingFactorForHighOISide;
     }
-    // TODO: M2 check for isContract
+    //  M2 check for isContract
 
     function setTierBasedTradingFees(address _tierBasedTradingFees)
         external
@@ -118,12 +118,12 @@ contract Utils is IUtils, Governable {
     {
         tierBasedTradingFees = ITierBasedTradingFees(_tierBasedTradingFees);
     }
-    // TODO: M2 check for isContract
+    //  M2 check for isContract
 
     function setVault(IVault _vault) external onlyGov isContract(address(_vault)) {
         vault = _vault;
     }
-    // TODO: M2 check for isContract
+    //  M2 check for isContract
 
     function setPriceFeed(address _pricefeed) external onlyGov isContract(_pricefeed) {
         priceFeed = IPriceFeed(_pricefeed);

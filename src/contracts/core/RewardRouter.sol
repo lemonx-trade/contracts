@@ -64,19 +64,19 @@ contract RewardRouter is IRewardRouter, ReentrancyGuard, Governable {
         require(isKeeper[msg.sender] || (msg.sender == address(this)), "RewardRouter: Not keeper");
         _;
     }
-    // TODO: M2 check for isContract
-    // TODO: L1 missing events
+    //  M2 check for isContract
+    //  L1 missing events
 
     function setFeeLlpTracker(address _feeLlpTracker) external onlyGov isContract(_feeLlpTracker) {
         feeLlpTracker = _feeLlpTracker;
     }
-    // TODO: M2 check for isContract
+    //  M2 check for isContract
     // TODO: L1 missing events
 
     function setLlpManager(address _llpManager) external onlyGov isContract(_llpManager) {
         llpManager = _llpManager;
     }
-    // TODO: M2 check for isContract
+    //  M2 check for isContract
     // TODO: L1 missing events
 
     function setLlp(address _llp) external onlyGov isContract(_llp) {

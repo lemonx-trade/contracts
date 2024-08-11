@@ -194,7 +194,7 @@ contract Vault is ReentrancyGuard, IVault {
         liquidationFeeUsd = _liquidationFeeUsd;
         liquidationFactor = _liquidationFactor;
     }
-    // TODO: M2 check for isContract
+    //  M2 check for isContract
     // TODO: L4 zero or dead address check - should we add it here?
 
     function setUtils(address _utils) external override isContract(_utils) {
@@ -217,13 +217,13 @@ contract Vault is ReentrancyGuard, IVault {
         _onlyGov();
         ceaseLPActivity = _cease;
     }
-    // TODO: M2 check for isContract
+    //  M2 check for isContract
 
     function setOrderManager(address newOrderManager, bool _isOrderManager) external isContract(newOrderManager) {
         _onlyGov();
         orderManagers[newOrderManager] = _isOrderManager;
     }
-    // TODO: M2 check for isContract
+    //  M2 check for isContract
 
     function setUsdl(address newUsdl) external isContract(newUsdl) {
         _onlyGov();
@@ -271,7 +271,7 @@ contract Vault is ReentrancyGuard, IVault {
         _onlyGov();
         maxGasPrice = _maxGasPrice;
     }
-    // TODO: M2 check for isContract
+    //  M2 check for isContract
 
     function setPriceFeed(address _priceFeed) external override isContract(_priceFeed) {
         _onlyGov();

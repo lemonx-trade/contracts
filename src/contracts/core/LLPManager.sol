@@ -78,7 +78,7 @@ contract LlpManager is ReentrancyGuard, Governable, ILlpManager {
         cooldownDuration = _cooldownDuration;
         maxPoolValue = _maxPoolValue;
     }
-    // TODO: M2 check for isContract
+    //  M2 check for isContract
     // TODO: L1 missing events
 
     function setUtils(address _utils) external onlyGov isContract(_utils) {
@@ -110,19 +110,19 @@ contract LlpManager is ReentrancyGuard, Governable, ILlpManager {
         require(_cooldownDuration <= MAX_COOLDOWN_DURATION, "LlpManager: invalid _cooldownDuration");
         cooldownDuration = _cooldownDuration;
     }
-    // TODO: M2 check for isContract
+    //  M2 check for isContract
     // TODO: L1 missing events
 
     function setVault(address _vault) external onlyGov isContract(_vault) {
         vault = IVault(_vault);
     }
-    // TODO: M2 check for isContract
+    //  M2 check for isContract
     // TODO: L1 missing events
 
     function setUsdl(address _usdl) external onlyGov isContract(_usdl) {
         usdl = _usdl;
     }
-    // TODO: M2 check for isContract
+    //  M2 check for isContract
     // TODO: L1 missing events
 
     function setLlp(address _llp) external onlyGov isContract(_llp) {

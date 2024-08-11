@@ -60,14 +60,14 @@ contract PriceFeed is IPriceFeed, Governable {
         require(updater[msg.sender], "PriceFeed: sender does not have entitlements to update price");
         _;
     }
-    // TODO: M2 check for isContract
+    //  M2 check for isContract
     // TODO: L1 missing events
     // TODO: L4 zero or dead address check
 
     function setOrderManager(address _orderManager) external onlyGov isContract(_orderManager) {
         orderManager = IOrderManager(_orderManager);
     }
-    // TODO: M2 check for isContract
+    // M2 check for isContract
     // TODO: L1 missing events
     // TODO: L4 zero or dead address check
 
