@@ -69,43 +69,51 @@ contract LlpManager is ReentrancyGuard, Governable, ILlpManager {
         maxPoolValue = _maxPoolValue;
     }
     // TODO: M2 check for isContract
+    // TODO: L1 missing events
 
     function setUtils(address _utils) external onlyGov {
         utils = IUtils(_utils);
     }
+    // TODO: L1 missing events
 
     function setHandler(address _handler, bool _isActive) external onlyGov {
         isHandler[_handler] = _isActive;
     }
+    // TODO: L1 missing events
 
     function whiteListToken(address token) public onlyGov {
         whiteListedTokens[token] = true;
     }
+    // TODO: L1 missing events
 
     function removeFromWhiteListToken(address token) public onlyGov {
         whiteListedTokens[token] = false;
     }
-    // TODO: M3 missing threshold
+    // TODO: L1 missing events
 
     function setMaxPoolValue(uint256 _maxPoolValue) public onlyGov {
         maxPoolValue = _maxPoolValue;
     }
+    // TODO: L1 missing events
 
     function setCooldownDuration(uint256 _cooldownDuration) external override onlyGov {
         require(_cooldownDuration <= MAX_COOLDOWN_DURATION, "LlpManager: invalid _cooldownDuration");
         cooldownDuration = _cooldownDuration;
     }
     // TODO: M2 check for isContract
+    // TODO: L1 missing events
 
     function setVault(address _vault) external onlyGov {
         vault = IVault(_vault);
     }
     // TODO: M2 check for isContract
+    // TODO: L1 missing events
 
     function setUsdl(address _usdl) external onlyGov {
         usdl = _usdl;
     }
     // TODO: M2 check for isContract
+    // TODO: L1 missing events
 
     function setLlp(address _llp) external onlyGov {
         llp = _llp;

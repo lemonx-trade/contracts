@@ -24,26 +24,31 @@ contract ReaderCache is Governable {
         fLLP = ILLP(_fLLP);
     }
     // TODO: M2 check for isContract
+    // TODO: L1 missing events
 
     function setVault(address _vault) external onlyGov {
         vault = IVault(_vault);
     }
     // TODO: M2 check for isContract
+    // TODO: L1 missing events
 
     function setUtils(address _utils) external onlyGov {
         utils = IUtils(_utils);
     }
     // TODO: M2 check for isContract
+    // TODO: L1 missing events
 
     function setReaderContract(address _readerContract) external onlyGov {
         readerContract = IReaderContract(_readerContract);
     }
     // TODO: M2 check for isContract
+    // TODO: L1 missing events
 
     function setLLP(address _llp) external onlyGov {
         llp = ILLP(_llp);
     }
     // TODO: M2 check for isContract
+    // TODO: L1 missing events
 
     function setFLLP(address _fLLP) external onlyGov {
         fLLP = ILLP(_fLLP);

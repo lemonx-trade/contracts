@@ -55,16 +55,19 @@ contract RewardRouter is IRewardRouter, ReentrancyGuard, Governable {
         _;
     }
     // TODO: M2 check for isContract
+    // TODO: L1 missing events
 
     function setFeeLlpTracker(address _feeLlpTracker) external onlyGov {
         feeLlpTracker = _feeLlpTracker;
     }
     // TODO: M2 check for isContract
+    // TODO: L1 missing events
 
     function setLlpManager(address _llpManager) external onlyGov {
         llpManager = _llpManager;
     }
     // TODO: M2 check for isContract
+    // TODO: L1 missing events
 
     function setLlp(address _llp) external onlyGov {
         llp = _llp;
@@ -75,6 +78,7 @@ contract RewardRouter is IRewardRouter, ReentrancyGuard, Governable {
     function setMinExecutionFee(uint256 _minExecutionFee) external onlyGov {
         minExecutionFee = _minExecutionFee;
     }
+    // TODO: L4 zero or dead address check
 
     function setKeeperStatus(address newKeeper, bool status) external onlyGov {
         isKeeper[newKeeper] = status;

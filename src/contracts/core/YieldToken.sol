@@ -44,19 +44,25 @@ contract YieldToken is IERC20, IYieldToken {
         admins[msg.sender] = true;
         _mint(msg.sender, _initialSupply);
     }
+    // TODO: L1 missing events
+    // TODO: L4 zero or dead address check
 
     function setGov(address _gov) external onlyGov {
         gov = _gov;
     }
+    // TODO: L1 missing events
 
     function setInfo(string memory _name, string memory _symbol) external onlyGov {
         name = _name;
         symbol = _symbol;
     }
+    // TODO: L1 missing events
+    // TODO: L4 zero or dead address check
 
     function addAdmin(address _account) external onlyGov {
         admins[_account] = true;
     }
+    // TODO: L4 zero or dead address check
 
     function removeAdmin(address _account) external override onlyGov {
         admins[_account] = false;
@@ -66,20 +72,24 @@ contract YieldToken is IERC20, IYieldToken {
     function withdrawToken(address _token, address _account, uint256 _amount) external onlyGov {
         IERC20(_token).safeTransfer(_account, _amount);
     }
+    // TODO: L1 missing events
 
     function setInWhitelistMode(bool _inWhitelistMode) external onlyGov {
         inWhitelistMode = _inWhitelistMode;
     }
+    // TODO: L1 missing events
 
     function setWhitelistedHandler(address _handler, bool _isWhitelisted) external onlyGov {
         whitelistedHandlers[_handler] = _isWhitelisted;
     }
+    // TODO: L1 missing events
 
     function addNonStakingAccount(address _account) external onlyAdmin {
         require(!nonStakingAccounts[_account], "YieldToken: _account already marked");
         nonStakingAccounts[_account] = true;
         nonStakingSupply = nonStakingSupply + (balances[_account]);
     }
+    // TODO: L1 missing events
 
     function removeNonStakingAccount(address _account) external onlyAdmin {
         require(nonStakingAccounts[_account], "YieldToken: _account not marked");

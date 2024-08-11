@@ -37,6 +37,7 @@ contract RewardTracker is IERC20, ReentrancyGuard, IRewardTracker, Governable {
     mapping(address => bool) public isHandler;
     address public rewardToken;
     uint256 public rewardPrecision = 1000000;
+    // TODO: L3 missing visibility
     address admin;
     uint256 public cummulativeRewardPerLPToken = 0;
 
@@ -65,20 +66,24 @@ contract RewardTracker is IERC20, ReentrancyGuard, IRewardTracker, Governable {
     function onlyAdmin() internal view {
         require(msg.sender == admin, "RewardTracker: forbidden incorrect admin");
     }
+    // TODO: L4 zero or dead address check
 
     function setDepositToken(address _depositToken, bool _isDepositToken) external onlyGov {
         isDepositToken[_depositToken] = _isDepositToken;
     }
     // TODO: M3 missing for threshold
+    // TODO: L1 missing events
 
     function setRewardPrecision(uint256 _rewardPrecision) public onlyGov {
         rewardPrecision = _rewardPrecision;
     }
+    // TODO: L4 zero or dead address check
 
     function setHandler(address _handler, bool _isActive) external onlyGov {
         isHandler[_handler] = _isActive;
     }
     // TODO: M3 missing for threshold
+    // TODO: L1 missing events
 
     function setCummulativeRewardRate(uint256 _cummulativeRewardPerLPToken) public onlyGov {
         cummulativeRewardPerLPToken = _cummulativeRewardPerLPToken;

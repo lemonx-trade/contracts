@@ -23,6 +23,7 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
     bytes32[] public increasePositionRequestKeys;
     mapping(address => uint256) public decreasePositionsIndex;
     mapping(bytes32 => StructsUtils.DecreasePositionRequest) public decreasePositionRequests;
+    // TODO: L3 missing visibility
     bytes32[] decreasePositionRequestKeys;
     mapping(address => bool) public isPositionKeeper;
     uint256 public minBlockDelayKeeper;
@@ -223,6 +224,7 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
         _;
     }
     // TODO: M3 missing for threshold
+    // TODO: L1 missing events
 
     function setMinPurchaseAmount(uint256 _marketOrder, uint256 _limitOrder) external onlyAdmin {
         minPurchaseUSDAmountMarketOrder = _marketOrder;
@@ -234,11 +236,13 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
         emit SetPositionKeeper(_account, _isActive);
     }
     // TODO: M3 missing for threshold
+    // TODO: L1 missing events
 
     function setMaxTPMultiplier(uint256 _maxProfitMultiplier) external onlyAdmin {
         maxProfitMultiplier = _maxProfitMultiplier;
     }
     // TODO: M3 missing for threshold
+    // TODO: L1 missing events
 
     function setMinExecutionFeeMarketOrder(
         uint256 _minExecutionFeeIncreaseMarketOrder,
@@ -248,6 +252,7 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
         minExecutionFeeDecreaseMarketOrder = _minExecutionFeeDecreaseMarketOrder;
     }
     // TODO: M3 missing for threshold
+    // TODO: L1 missing events
 
     function setMinExecutionFeeLimitOrder(
         uint256 _minExecutionFeeIncreaseLimitOrder,

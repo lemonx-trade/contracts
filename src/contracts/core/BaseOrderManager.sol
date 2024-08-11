@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-
+// TODO: L2 floating pragrma solidity version
 pragma solidity ^0.8.19;
 
 import "../libraries/token/SafeERC20.sol";
@@ -41,21 +41,25 @@ contract BaseOrderManager {
         depositFee = _depositFee;
     }
     // TODO: M2 check for isContract ? -> do we need to update it
+    // TODO: L1 missing events
 
     function setAdmin(address _admin) external onlyAdmin {
         admin = _admin;
     }
     // TODO: M2 check for isContract
+    // TODO: L1 missing events
 
     function setVault(address _vault) external onlyAdmin {
         vault = _vault;
     }
     // TODO: M2 check for isContract
+    // TODO: L1 missing events
 
     function setUtils(address _utils) external onlyAdmin {
         utils = _utils;
     }
     // TODO: M1 ensure less than 25% update
+    // TODO: L1 missing events
 
     function setDepositFee(uint256 _fee) external onlyAdmin {
         depositFee = _fee;

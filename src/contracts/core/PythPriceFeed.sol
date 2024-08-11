@@ -56,11 +56,13 @@ contract PythPriceFeed is IPriceFeed, Governable {
         _;
     }
     // TODO: M2 check for isContract
+    // TODO: L1 missing events
 
     function setOrderManager(address _orderManager) external onlyGov {
         orderManager = IOrderManager(_orderManager);
     }
     // TODO: M2 check for isContract
+    // TODO: L1 missing events
 
     function setRewardRouter(address _rewardRouter) external onlyGov {
         rewardRouter = IRewardRouter(_rewardRouter);
@@ -74,14 +76,17 @@ contract PythPriceFeed is IPriceFeed, Governable {
         updater[_updater] = false;
     }
     // TODO: M2 check for isContract
+    // TODO: L1 missing events
 
     function setPythContract(address _pythContract) external onlyGov {
         pythContract = _pythContract;
     }
+    // TODO: L1 missing events
 
     function setMaxAllowedDelay(uint256 _maxAllowedDelay) external onlyGov {
         maxAllowedDelay = _maxAllowedDelay;
     }
+    // TODO: L1 missing events
 
     function setMaxAllowedDelta(uint256 _maxAllowedDelta) external onlyGov {
         maxAllowedDelta = _maxAllowedDelta;

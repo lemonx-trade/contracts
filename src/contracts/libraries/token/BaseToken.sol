@@ -43,19 +43,27 @@ contract BaseToken is IERC20, IBaseToken {
         gov = msg.sender;
         _mint(msg.sender, _initialSupply);
     }
+    // TODO: L1 missing events
+    // TODO: L4 zero or dead address check
 
     function setGov(address _gov) external onlyGov {
         gov = _gov;
     }
+    // TODO: L1 missing events
+    // TODO: L4 zero or dead address check
 
     function setInfo(string memory _name, string memory _symbol) external onlyGov {
         name = _name;
         symbol = _symbol;
     }
+    // TODO: L1 missing events
+    // TODO: L4 zero or dead address check
 
     function addAdmin(address _account) external onlyGov {
         admins[_account] = true;
     }
+    // TODO: L1 missing events
+    // TODO: L4 zero or dead address check
 
     function removeAdmin(address _account) external override onlyGov {
         admins[_account] = false;
@@ -65,10 +73,13 @@ contract BaseToken is IERC20, IBaseToken {
     function withdrawToken(address _token, address _account, uint256 _amount) external override onlyGov {
         IERC20(_token).safeTransfer(_account, _amount);
     }
+    // TODO: L1 missing events
 
     function setInPrivateTransferMode(bool _inPrivateTransferMode) external override onlyGov {
         inPrivateTransferMode = _inPrivateTransferMode;
     }
+    // TODO: L1 missing events
+    // TODO: L4 zero or dead address check
 
     function setHandler(address _handler, bool _isActive) external onlyGov {
         isHandler[_handler] = _isActive;

@@ -51,34 +51,45 @@ contract PriceFeed is IPriceFeed, Governable {
         _;
     }
     // TODO: M2 check for isContract
+    // TODO: L1 missing events
+    // TODO: L4 zero or dead address check
 
     function setOrderManager(address _orderManager) external onlyGov {
         orderManager = IOrderManager(_orderManager);
     }
     // TODO: M2 check for isContract
+    // TODO: L1 missing events
+    // TODO: L4 zero or dead address check
 
     function setRewardRouter(address _rewardRouter) external onlyGov {
         rewardRouter = IRewardRouter(_rewardRouter);
     }
+    // TODO: L1 missing events
+    // TODO: L4 zero or dead address check
 
     function setUpdater(address _updater) external onlyGov {
         updater[_updater] = true;
     }
+    // TODO: L1 missing events
+    // TODO: L4 zero or dead address check
 
     function removeUpdater(address _updater) external onlyGov {
         updater[_updater] = false;
     }
     // TODO: M3 missing for threshold
+    // TODO: L1 missing events
 
     function setMaxAllowedDelay(uint256 _maxAllowedDelay) external onlyGov {
         maxAllowedDelay = _maxAllowedDelay;
     }
     // TODO: M3 missing for threshold
+    // TODO: L1 missing events
 
     function setMaxAllowedDelta(uint256 _maxAllowedDelta) external onlyGov {
         maxAllowedDelta = _maxAllowedDelta;
     }
     // TODO: M3 missing for threshold
+    // TODO: L1 missing events
 
     function setSlippage(address _indexToken, uint256 _slippage) external onlyGov {
         slippage[_indexToken] = _slippage;

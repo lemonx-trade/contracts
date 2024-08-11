@@ -80,34 +80,45 @@ contract Timelock is ITimelock {
         mintReceiver = _mintReceiver;
         llpManager = _llpManager;
     }
+    // TODO: L1 missing events
+    // TODO: L4 zero or dead address check
 
     function setAdmin(address _admin) external override onlyAdmin {
         admin = _admin;
     }
+    // TODO: L1 missing events
+    // TODO: L4 zero or dead address check
 
     function setExternalAdmin(address _target, address _admin) external onlyAdmin {
         require(_target != address(this), "Timelock: invalid _target");
         IAdmin(_target).setAdmin(_admin);
     }
+    // TODO: L1 missing events
+    // TODO: L4 zero or dead address check
 
     function setContractHandler(address _handler, bool _isActive) external onlyAdmin {
         isHandler[_handler] = _isActive;
     }
+    // TODO: L1 missing events
+    // TODO: L4 zero or dead address check
 
     function setKeeper(address _keeper, bool _isActive) external onlyAdmin {
         isKeeper[_keeper] = _isActive;
     }
+    // TODO: L1 missing events
 
     function setBuffer(uint256 _buffer) external onlyAdmin {
         require(_buffer <= MAX_BUFFER, "Timelock: invalid _buffer");
         require(_buffer > buffer, "Timelock: buffer cannot be decreased");
         buffer = _buffer;
     }
+    // TODO: L1 missing events
 
     function setMaxLeverage(address _vault, uint256 _maxLeverage, address _token) external onlyAdmin {
         require(_maxLeverage > MAX_LEVERAGE_VALIDATION, "Timelock: invalid _maxLeverage");
         IVault(_vault).setMaxLeverage(_maxLeverage, _token);
     }
+    // TODO: L1 missing events
 
     function setBorrowingRate(
         address _vault,
@@ -119,6 +130,7 @@ contract Timelock is ITimelock {
         require(_borrowingRateFactor < MAX_BORROWING_RATE_FACTOR, "Timelock: invalid _borrowingRateFactor");
         IVault(_vault).setBorrowingRate(token, _borrowingInterval, _borrowingRateFactor, _borrowingExponent);
     }
+    // TODO: L1 missing events
 
     function setFundingRate(
         address _vault,
@@ -130,6 +142,7 @@ contract Timelock is ITimelock {
         require(_fundingRateFactor < MAX_FUNDING_RATE_FACTOR, "Timelock: invalid _fundingRateFactor");
         IVault(_vault).setFundingRate(token, _fundingInterval, _fundingRateFactor, _fundingExponent);
     }
+    // TODO: L1 missing events
 
     function setTokenConfig(address _vault, address _token, uint256 _minProfitBps, uint256 _maxLeverage)
         external
@@ -171,22 +184,28 @@ contract Timelock is ITimelock {
         require(_cooldownDuration < 2 hours, "Timelock: invalid _cooldownDuration");
         ILlpManager(llpManager).setCooldownDuration(_cooldownDuration);
     }
+    // TODO: L1 missing events
 
     function setMaxGlobalLongSize(address _vault, address _token, uint256 _amount) external onlyAdmin {
         IVault(_vault).setMaxGlobalLongSize(_token, _amount);
     }
+    // TODO: L1 missing events
 
     function setMaxGlobalShortSize(address _vault, address _token, uint256 _amount) external onlyAdmin {
         IVault(_vault).setMaxGlobalShortSize(_token, _amount);
     }
+    // TODO: L1 missing events
 
     function removeAdmin(address _token, address _account) external onlyAdmin {
         IYieldToken(_token).removeAdmin(_account);
     }
+    // TODO: L1 missing events
 
     function setUtils(address _vault, IUtils _utils) external onlyAdmin {
         IVault(_vault).setUtils(address(_utils));
     }
+    // TODO: L1 missing events
+    // TODO: L4 zero or dead address check
 
     function setMaxGasPrice(address _vault, uint256 _maxGasPrice) external onlyAdmin {
         require(_maxGasPrice > 5000000000, "Invalid _maxGasPrice");
@@ -206,6 +225,7 @@ contract Timelock is ITimelock {
     function setInPrivateLiquidationMode(address _vault, bool _inPrivateLiquidationMode) external onlyAdmin {
         IVault(_vault).setInPrivateLiquidationMode(_inPrivateLiquidationMode);
     }
+    // TODO: L4 zero or dead address check
 
     function setLiquidator(address _vault, address _liquidator, bool _isActive) external onlyAdmin {
         IVault(_vault).setLiquidator(_liquidator, _isActive);

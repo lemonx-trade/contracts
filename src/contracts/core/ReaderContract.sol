@@ -32,50 +32,60 @@ contract ReaderContract is Governable {
         utils = IUtils(_utils);
     }
     // TODO: M3 missing for threshold
+    // TODO: L1 missing events
 
     function setTier1Size(uint256 _tier1Size) external onlyGov {
         tier1Size = _tier1Size;
     }
     // TODO: M3 missing for threshold
+    // TODO: L1 missing events
 
     function setTier2Size(uint256 _tier2Size) external onlyGov {
         tier2Size = _tier2Size;
     }
     // TODO: M3 missing for threshold
+    // TODO: L1 missing events
 
     function setTier3Size(uint256 _tier3Size) external onlyGov {
         tier3Size = _tier3Size;
     }
     // TODO: M3 missing for threshold
+    // TODO: L1 missing events
 
     function setTier1Factor(uint256 _tier1Factor) external onlyGov {
         tier1Factor = _tier1Factor;
     }
     // TODO: M3 missing for threshold
+    // TODO: L1 missing events
 
     function setTier2Factor(uint256 _tier2Factor) external onlyGov {
         tier2Factor = _tier2Factor;
     }
     // TODO: M3 missing for threshold
+    // TODO: L1 missing events
 
     function setTier3Factor(uint256 _tier3Factor) external onlyGov {
         tier3Factor = _tier3Factor;
     }
     // TODO: M3 missing for threshold
+    // TODO: L1 missing events
 
     function setTierBorrowingRateFactor(uint256 _tierBorrowingRateFactor) external onlyGov {
         tierBorrowingRateFactor = _tierBorrowingRateFactor;
     }
     // TODO: M3 missing for threshold
+    // TODO: L1 missing events
 
     function setFundingFactorForLessOISide(int256 _fundingFactorForLessOISide) external onlyGov {
         fundingFactorForLessOISide = _fundingFactorForLessOISide;
     }
     // TODO: M3 missing for threshold
+    // TODO: L1 missing events
 
     function setFundingFactorForHighOISide(int256 _fundingFactorForHighOISide) external onlyGov {
         fundingFactorForHighOISide = _fundingFactorForHighOISide;
     }
+    // TODO: L1 missing events
 
     function setTierBorrowingRateStartTime(uint256 _tierBorrowingRateStartTime) external onlyGov {
         tierBorrowingRateStartTime = _tierBorrowingRateStartTime;
