@@ -7,4 +7,11 @@
     "editor.defaultFormatter": "JuanBlanco.solidity" 
   },
   "solidity.formatter": "forge",
+  "todo-tree.general.tags": [
+       "TODO",
+       "FIXME"
+   ],
+  "todo-tree.tree.showScanMode": true,
+  "todo-tree.tree.scanOnLoad": true,
+  "todo-tree.tree.scanOnSave": true
 }
