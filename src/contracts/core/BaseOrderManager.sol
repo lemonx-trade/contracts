@@ -33,6 +33,16 @@ contract BaseOrderManager {
         _;
     }
 
+    modifier isContract(address account) {
+        require(account != address(0), "nulladd");
+        uint256 size;
+        assembly {
+            size := extcodesize(account)
+        }
+        require(size > 0, "eoa");
+        _;
+    }
+
     constructor(address _vault, address _utils, address _pricefeed, uint256 _depositFee) {
         vault = _vault;
         utils = _utils;
@@ -49,13 +59,13 @@ contract BaseOrderManager {
     // TODO: M2 check for isContract
     // TODO: L1 missing events
 
-    function setVault(address _vault) external onlyAdmin {
+    function setVault(address _vault) external onlyAdmin isContract(_vault) {
         vault = _vault;
     }
     // TODO: M2 check for isContract
     // TODO: L1 missing events
 
-    function setUtils(address _utils) external onlyAdmin {
+    function setUtils(address _utils) external onlyAdmin isContract(_utils) {
         utils = _utils;
     }
     // TODO: M1 ensure less than 25% update

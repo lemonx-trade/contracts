@@ -52,6 +52,16 @@ contract LlpManager is ReentrancyGuard, Governable, ILlpManager {
         uint256 amountOut
     );
 
+    modifier isContract(address account) {
+        require(account != address(0), "nulladd");
+        uint256 size;
+        assembly {
+            size := extcodesize(account)
+        }
+        require(size > 0, "eoa");
+        _;
+    }
+
     constructor(
         address _vault,
         address _utils,
@@ -71,7 +81,7 @@ contract LlpManager is ReentrancyGuard, Governable, ILlpManager {
     // TODO: M2 check for isContract
     // TODO: L1 missing events
 
-    function setUtils(address _utils) external onlyGov {
+    function setUtils(address _utils) external onlyGov isContract(_utils) {
         utils = IUtils(_utils);
     }
     // TODO: L1 missing events
@@ -103,19 +113,19 @@ contract LlpManager is ReentrancyGuard, Governable, ILlpManager {
     // TODO: M2 check for isContract
     // TODO: L1 missing events
 
-    function setVault(address _vault) external onlyGov {
+    function setVault(address _vault) external onlyGov isContract(_vault) {
         vault = IVault(_vault);
     }
     // TODO: M2 check for isContract
     // TODO: L1 missing events
 
-    function setUsdl(address _usdl) external onlyGov {
+    function setUsdl(address _usdl) external onlyGov isContract(_usdl) {
         usdl = _usdl;
     }
     // TODO: M2 check for isContract
     // TODO: L1 missing events
 
-    function setLlp(address _llp) external onlyGov {
+    function setLlp(address _llp) external onlyGov isContract(_llp) {
         llp = _llp;
     }
 

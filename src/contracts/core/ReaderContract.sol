@@ -26,6 +26,16 @@ contract ReaderContract is Governable {
     int256 public fundingFactorForHighOISide = 1250;
     uint256 constant POSITION_FEE_SCALING_FACTOR = 1000000;
 
+    modifier isContract(address account) {
+        require(account != address(0), "nulladd");
+        uint256 size;
+        assembly {
+            size := extcodesize(account)
+        }
+        require(size > 0, "eoa");
+        _;
+    }
+
     constructor(address _vault, address _usdc, address _utils) {
         vault = IVault(_vault);
         usdc = IERC20(_usdc);
@@ -92,17 +102,17 @@ contract ReaderContract is Governable {
     }
     // TODO: M2 check for isContract
 
-    function setVault(address _vault) public onlyGov {
+    function setVault(address _vault) public onlyGov isContract(_vault) {
         vault = IVault(_vault);
     }
     // TODO: M2 check for isContract
 
-    function setUtils(address _utils) public onlyGov {
+    function setUtils(address _utils) public onlyGov isContract(_utils) {
         utils = IUtils(_utils);
     }
     // TODO: M2 check for isContract
 
-    function setUsdc(address _usdc) public onlyGov {
+    function setUsdc(address _usdc) public onlyGov isContract(_usdc) {
         usdc = IERC20(_usdc);
     }
 

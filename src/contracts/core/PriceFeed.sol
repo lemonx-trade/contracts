@@ -40,6 +40,16 @@ contract PriceFeed is IPriceFeed, Governable {
 
     event PriceSet(TokenPrice priceSet);
 
+    modifier isContract(address account) {
+        require(account != address(0), "nulladd");
+        uint256 size;
+        assembly {
+            size := extcodesize(account)
+        }
+        require(size > 0, "eoa");
+        _;
+    }
+
     constructor(uint256 _maxAllowedDelay, address _updater, uint256 _maxAllowedDelta) {
         maxAllowedDelay = _maxAllowedDelay;
         updater[_updater] = true;
@@ -54,14 +64,14 @@ contract PriceFeed is IPriceFeed, Governable {
     // TODO: L1 missing events
     // TODO: L4 zero or dead address check
 
-    function setOrderManager(address _orderManager) external onlyGov {
+    function setOrderManager(address _orderManager) external onlyGov isContract(_orderManager) {
         orderManager = IOrderManager(_orderManager);
     }
     // TODO: M2 check for isContract
     // TODO: L1 missing events
     // TODO: L4 zero or dead address check
 
-    function setRewardRouter(address _rewardRouter) external onlyGov {
+    function setRewardRouter(address _rewardRouter) external onlyGov isContract(_rewardRouter) {
         rewardRouter = IRewardRouter(_rewardRouter);
     }
     // TODO: L1 missing events

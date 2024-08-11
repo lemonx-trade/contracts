@@ -49,6 +49,16 @@ contract Utils is IUtils, Governable {
         uint256 timestamp
     );
 
+    modifier isContract(address account) {
+        require(account != address(0), "nulladd");
+        uint256 size;
+        assembly {
+            size := extcodesize(account)
+        }
+        require(size > 0, "eoa");
+        _;
+    }
+
     constructor(IVault _vault, IPriceFeed _pricefeed, address _tierBasedTradingFees) {
         vault = _vault;
         priceFeed = _pricefeed;
@@ -101,17 +111,21 @@ contract Utils is IUtils, Governable {
     }
     // TODO: M2 check for isContract
 
-    function setTierBasedTradingFees(address _tierBasedTradingFees) external onlyGov {
+    function setTierBasedTradingFees(address _tierBasedTradingFees)
+        external
+        onlyGov
+        isContract(_tierBasedTradingFees)
+    {
         tierBasedTradingFees = ITierBasedTradingFees(_tierBasedTradingFees);
     }
     // TODO: M2 check for isContract
 
-    function setVault(IVault _vault) external onlyGov {
+    function setVault(IVault _vault) external onlyGov isContract(address(_vault)) {
         vault = _vault;
     }
     // TODO: M2 check for isContract
 
-    function setPriceFeed(address _pricefeed) external onlyGov {
+    function setPriceFeed(address _pricefeed) external onlyGov isContract(_pricefeed) {
         priceFeed = IPriceFeed(_pricefeed);
     }
     // TODO: M3 missing for threshold

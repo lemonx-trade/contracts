@@ -44,6 +44,16 @@ contract PythPriceFeed is IPriceFeed, Governable {
     event NoDarkOraclePrice(address token, uint256 time);
     event PythPricesDelayed(address token, uint256 currentTime, uint256 priceTime);
 
+    modifier isContract(address account) {
+        require(account != address(0), "nulladd");
+        uint256 size;
+        assembly {
+            size := extcodesize(account)
+        }
+        require(size > 0, "eoa");
+        _;
+    }
+
     constructor(uint256 _maxAllowedDelay, address _pythContract, address _updater, uint256 _maxAllowedDelta) {
         maxAllowedDelay = _maxAllowedDelay;
         pythContract = _pythContract;
@@ -58,13 +68,13 @@ contract PythPriceFeed is IPriceFeed, Governable {
     // TODO: M2 check for isContract
     // TODO: L1 missing events
 
-    function setOrderManager(address _orderManager) external onlyGov {
+    function setOrderManager(address _orderManager) external onlyGov isContract(_orderManager) {
         orderManager = IOrderManager(_orderManager);
     }
     // TODO: M2 check for isContract
     // TODO: L1 missing events
 
-    function setRewardRouter(address _rewardRouter) external onlyGov {
+    function setRewardRouter(address _rewardRouter) external onlyGov isContract(_rewardRouter) {
         rewardRouter = IRewardRouter(_rewardRouter);
     }
 
@@ -78,7 +88,7 @@ contract PythPriceFeed is IPriceFeed, Governable {
     // TODO: M2 check for isContract
     // TODO: L1 missing events
 
-    function setPythContract(address _pythContract) external onlyGov {
+    function setPythContract(address _pythContract) external onlyGov isContract(_pythContract) {
         pythContract = _pythContract;
     }
     // TODO: L1 missing events

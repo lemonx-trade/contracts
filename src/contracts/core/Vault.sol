@@ -156,8 +156,18 @@ contract Vault is ReentrancyGuard, IVault {
     event IncreasePoolAmount(address token, uint256 amount);
     event DecreasePoolAmount(address token, uint256 amount);
 
+    modifier isContract(address account) {
+        require(account != address(0), "nulladd");
+        uint256 size;
+        assembly {
+            size := extcodesize(account)
+        }
+        require(size > 0, "eoa");
+        _;
+    }
     // once the parameters are verified to be working correctly,
     // gov should be set to a timelock contract or a governance contract
+
     constructor() {
         gov = msg.sender;
     }
@@ -187,13 +197,13 @@ contract Vault is ReentrancyGuard, IVault {
     // TODO: M2 check for isContract
     // TODO: L4 zero or dead address check - should we add it here?
 
-    function setUtils(address _utils) external override {
+    function setUtils(address _utils) external override isContract(_utils) {
         _onlyGov();
         utils = IUtils(_utils);
     }
     // TODO: L4 zero or dead address check
 
-    function setGov(address newGov) external {
+    function setGov(address newGov) external isContract(newGov) {
         _onlyGov();
         gov = newGov;
     }
@@ -209,13 +219,13 @@ contract Vault is ReentrancyGuard, IVault {
     }
     // TODO: M2 check for isContract
 
-    function setOrderManager(address newOrderManager, bool _isOrderManager) external {
+    function setOrderManager(address newOrderManager, bool _isOrderManager) external isContract(newOrderManager) {
         _onlyGov();
         orderManagers[newOrderManager] = _isOrderManager;
     }
     // TODO: M2 check for isContract
 
-    function setUsdl(address newUsdl) external {
+    function setUsdl(address newUsdl) external isContract(newUsdl) {
         _onlyGov();
         usdl = newUsdl;
     }
@@ -263,7 +273,7 @@ contract Vault is ReentrancyGuard, IVault {
     }
     // TODO: M2 check for isContract
 
-    function setPriceFeed(address _priceFeed) external override {
+    function setPriceFeed(address _priceFeed) external override isContract(_priceFeed) {
         _onlyGov();
         priceFeed = _priceFeed;
     }

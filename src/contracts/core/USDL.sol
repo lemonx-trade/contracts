@@ -13,17 +13,27 @@ contract USDL is YieldToken, IUSDL {
         _;
     }
 
+    modifier isContract(address account) {
+        require(account != address(0), "nulladd");
+        uint256 size;
+        assembly {
+            size := extcodesize(account)
+        }
+        require(size > 0, "eoa");
+        _;
+    }
+
     constructor(address _vault) YieldToken("USD LemonX", "USDL", 0) {
         vaults[_vault] = true;
     }
     // TODO: M2 check for isContract
 
-    function addVault(address _vault) external override onlyGov {
+    function addVault(address _vault) external override onlyGov isContract(_vault) {
         vaults[_vault] = true;
     }
     // TODO: M2 check for isContract
 
-    function removeVault(address _vault) external override onlyGov {
+    function removeVault(address _vault) external override onlyGov isContract(_vault) {
         vaults[_vault] = false;
     }
 

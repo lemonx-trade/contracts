@@ -16,6 +16,16 @@ contract ReaderCache is Governable {
     ILLP public llp;
     ILLP public fLLP;
 
+    modifier isContract(address account) {
+        require(account != address(0), "nulladd");
+        uint256 size;
+        assembly {
+            size := extcodesize(account)
+        }
+        require(size > 0, "eoa");
+        _;
+    }
+
     constructor(address _vault, address _utils, address _readerContract, address _llp, address _fLLP) {
         vault = IVault(_vault);
         utils = IUtils(_utils);
@@ -26,31 +36,31 @@ contract ReaderCache is Governable {
     // TODO: M2 check for isContract
     // TODO: L1 missing events
 
-    function setVault(address _vault) external onlyGov {
+    function setVault(address _vault) external onlyGov isContract(_vault) {
         vault = IVault(_vault);
     }
     // TODO: M2 check for isContract
     // TODO: L1 missing events
 
-    function setUtils(address _utils) external onlyGov {
+    function setUtils(address _utils) external onlyGov isContract(_utils) {
         utils = IUtils(_utils);
     }
     // TODO: M2 check for isContract
     // TODO: L1 missing events
 
-    function setReaderContract(address _readerContract) external onlyGov {
+    function setReaderContract(address _readerContract) external onlyGov isContract(_readerContract) {
         readerContract = IReaderContract(_readerContract);
     }
     // TODO: M2 check for isContract
     // TODO: L1 missing events
 
-    function setLLP(address _llp) external onlyGov {
+    function setLLP(address _llp) external onlyGov isContract(_llp) {
         llp = ILLP(_llp);
     }
     // TODO: M2 check for isContract
     // TODO: L1 missing events
 
-    function setFLLP(address _fLLP) external onlyGov {
+    function setFLLP(address _fLLP) external onlyGov isContract(_fLLP) {
         fLLP = ILLP(_fLLP);
     }
 

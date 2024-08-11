@@ -50,6 +50,16 @@ contract RewardRouter is IRewardRouter, ReentrancyGuard, Governable {
         feeLlpTracker = _feeLlpTracker;
     }
 
+    modifier isContract(address account) {
+        require(account != address(0), "nulladd");
+        uint256 size;
+        assembly {
+            size := extcodesize(account)
+        }
+        require(size > 0, "eoa");
+        _;
+    }
+
     modifier onlyKeeper() {
         require(isKeeper[msg.sender] || (msg.sender == address(this)), "RewardRouter: Not keeper");
         _;
@@ -57,19 +67,19 @@ contract RewardRouter is IRewardRouter, ReentrancyGuard, Governable {
     // TODO: M2 check for isContract
     // TODO: L1 missing events
 
-    function setFeeLlpTracker(address _feeLlpTracker) external onlyGov {
+    function setFeeLlpTracker(address _feeLlpTracker) external onlyGov isContract(_feeLlpTracker) {
         feeLlpTracker = _feeLlpTracker;
     }
     // TODO: M2 check for isContract
     // TODO: L1 missing events
 
-    function setLlpManager(address _llpManager) external onlyGov {
+    function setLlpManager(address _llpManager) external onlyGov isContract(_llpManager) {
         llpManager = _llpManager;
     }
     // TODO: M2 check for isContract
     // TODO: L1 missing events
 
-    function setLlp(address _llp) external onlyGov {
+    function setLlp(address _llp) external onlyGov isContract(_llp) {
         llp = _llp;
     }
     // TODO: M1 ensure less than 25% update
