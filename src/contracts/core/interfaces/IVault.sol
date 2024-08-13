@@ -19,7 +19,7 @@ interface IVault {
     }
 
     function isInitialized() external view returns (bool);
-
+    function getUtilsAddress() external view returns (address);
     function setUtils(address _utils) external;
 
     function usdl() external view returns (address);

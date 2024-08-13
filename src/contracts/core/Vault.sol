@@ -157,7 +157,8 @@ contract Vault is ReentrancyGuard, IVault {
     event DecreasePoolAmount(address token, uint256 amount);
 
     modifier isContract(address account) {
-        require(account != address(0), "nulladd");
+        require(account != address(0), "ZERO");
+        require(account != 0x000000000000000000000000000000000000dEaD, "DEAD");
         uint256 size;
         assembly {
             size := extcodesize(account)
@@ -165,11 +166,21 @@ contract Vault is ReentrancyGuard, IVault {
         require(size > 0, "eoa");
         _;
     }
+
+    modifier validAddress(address _addr) {
+        require(_addr != address(0), "ZERO");
+        require(_addr != 0x000000000000000000000000000000000000dEaD, "DEAD");
+        _;
+    }
     // once the parameters are verified to be working correctly,
     // gov should be set to a timelock contract or a governance contract
 
     constructor() {
         gov = msg.sender;
+    }
+
+    function getUtilsAddress() external view returns (address) {
+        return address(utils);
     }
 
     // we have this validation as a function instead of a modifier to reduce contract size
@@ -195,13 +206,13 @@ contract Vault is ReentrancyGuard, IVault {
         liquidationFactor = _liquidationFactor;
     }
     //  M2 check for isContract
-    // TODO: L4 zero or dead address check - should we add it here?
+    //  L4 zero or dead address check
 
     function setUtils(address _utils) external override isContract(_utils) {
         _onlyGov();
         utils = IUtils(_utils);
     }
-    // TODO: L4 zero or dead address check
+    //  L4 zero or dead address check
 
     function setGov(address newGov) external isContract(newGov) {
         _onlyGov();

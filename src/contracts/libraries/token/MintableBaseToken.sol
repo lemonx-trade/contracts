@@ -16,9 +16,10 @@ contract MintableBaseToken is BaseToken, IMintable {
         require(isMinter[msg.sender], "MintableBaseToken: forbidden");
         _;
     }
-    // TODO: L4 zero or dead address check
 
-    function setMinter(address _minter, bool _isActive) external override onlyGov {
+    //  L4 zero or dead address check
+
+    function setMinter(address _minter, bool _isActive) external override onlyGov validAddress(_minter) {
         isMinter[_minter] = _isActive;
     }
 

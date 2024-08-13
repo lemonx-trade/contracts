@@ -50,7 +50,8 @@ contract Utils is IUtils, Governable {
     );
 
     modifier isContract(address account) {
-        require(account != address(0), "nulladd");
+        require(account != address(0), "ZERO");
+        require(account != 0x000000000000000000000000000000000000dEaD, "DEAD");
         uint256 size;
         assembly {
             size := extcodesize(account)
@@ -64,47 +65,47 @@ contract Utils is IUtils, Governable {
         priceFeed = _pricefeed;
         tierBasedTradingFees = ITierBasedTradingFees(_tierBasedTradingFees);
     }
-    // TODO: M3 missing for threshold
+    //  M3 missing for threshold - NOTE: Business logic
 
     function setTier1Size(uint256 _tier1Size) external onlyGov {
         tier1Size = _tier1Size;
     }
-    // TODO: M3 missing for threshold
+    //  M3 missing for threshold - NOTE: Business logic
 
     function setTier2Size(uint256 _tier2Size) external onlyGov {
         tier2Size = _tier2Size;
     }
-    // TODO: M3 missing for threshold
+    //  M3 missing for threshold - NOTE: Business logic
 
     function setTier3Size(uint256 _tier3Size) external onlyGov {
         tier3Size = _tier3Size;
     }
-    // TODO: M3 missing for threshold
+    //  M3 missing for threshold - NOTE: Business logic
 
     function setTier1Factor(uint256 _tier1Factor) external onlyGov {
         tier1Factor = _tier1Factor;
     }
-    // TODO: M3 missing for threshold
+    //  M3 missing for threshold - NOTE: Business logic
 
     function setTier2Factor(uint256 _tier2Factor) external onlyGov {
         tier2Factor = _tier2Factor;
     }
-    // TODO: M3 missing for threshold
+    //  M3 missing for threshold - NOTE: Business logic
 
     function setTier3Factor(uint256 _tier3Factor) external onlyGov {
         tier3Factor = _tier3Factor;
     }
-    // TODO: M3 missing for threshold
+    //  M3 missing for threshold - NOTE: Business logic
 
     function setTierBorrowingRateFactor(uint256 _tierBorrowingRateFactor) external onlyGov {
         tierBorrowingRateFactor = _tierBorrowingRateFactor;
     }
-    // TODO: M3 missing for threshold
+    //  M3 missing for threshold - NOTE: Business logic
 
     function setFundingFactorForLessOISide(int256 _fundingFactorForLessOISide) external onlyGov {
         fundingFactorForLessOISide = _fundingFactorForLessOISide;
     }
-    // TODO: M3 missing for threshold
+    //  M3 missing for threshold - NOTE: Business logic
 
     function setFundingFactorForHighOISide(int256 _fundingFactorForHighOISide) external onlyGov {
         fundingFactorForHighOISide = _fundingFactorForHighOISide;
@@ -128,22 +129,22 @@ contract Utils is IUtils, Governable {
     function setPriceFeed(address _pricefeed) external onlyGov isContract(_pricefeed) {
         priceFeed = IPriceFeed(_pricefeed);
     }
-    // TODO: M3 missing for threshold
+    //  M3 missing for threshold - NOTE: Business logic
 
     function setBorrowingRatePrecision(uint256 _precision) external onlyGov {
         BORROWING_RATE_PRECISION = _precision;
     }
-    // TODO: M3 missing for threshold
+    //  M3 missing for threshold - NOTE: Business logic
 
     function setFundingRatePrecision(int256 _precision) external onlyGov {
         FUNDING_RATE_PRECISION = _precision;
     }
-    // TODO: M3 missing for threshold
+    //  M3 missing for threshold - NOTE: Business logic
 
     function setTierBorrowingRateStartTime(uint256 _tierBorrowingRateStartTime) external onlyGov {
         tierBorrowingRateStartTime = _tierBorrowingRateStartTime;
     }
-    // TODO: M3 missing for threshold
+    //  M3 missing for threshold - NOTE: Business logic
 
     function setMaintanenceMargin(address _indexToken, uint256 _maintanenceMargin) external onlyGov {
         maintanenceMargin[_indexToken] = _maintanenceMargin;

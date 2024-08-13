@@ -14,7 +14,8 @@ contract USDL is YieldToken, IUSDL {
     }
 
     modifier isContract(address account) {
-        require(account != address(0), "nulladd");
+        require(account != address(0), "ZERO");
+        require(account != 0x000000000000000000000000000000000000dEaD, "DEAD");
         uint256 size;
         assembly {
             size := extcodesize(account)

@@ -26,8 +26,13 @@ contract ReaderContract is Governable {
     int256 public fundingFactorForHighOISide = 1250;
     uint256 constant POSITION_FEE_SCALING_FACTOR = 1000000;
 
+    event AddressChanged(uint256 configCode, address oldAddress, address newAddress);
+    event ValueChanged(uint256 configCode, uint256 oldValue, uint256 newValue);
+    event ValueChangedInt(uint256 configCode, int256 oldValue, int256 newValue);
+
     modifier isContract(address account) {
-        require(account != address(0), "nulladd");
+        require(account != address(0), "ZERO");
+        require(account != 0x000000000000000000000000000000000000dEaD, "DEAD");
         uint256 size;
         assembly {
             size := extcodesize(account)
@@ -41,79 +46,109 @@ contract ReaderContract is Governable {
         usdc = IERC20(_usdc);
         utils = IUtils(_utils);
     }
-    // TODO: M3 missing for threshold
-    // TODO: L1 missing events
+    //  M3 missing for threshold - NOTE: Business logic
+    //  L1 missing events
 
     function setTier1Size(uint256 _tier1Size) external onlyGov {
+        uint256 oldValue = tier1Size;
         tier1Size = _tier1Size;
+        emit ValueChanged(1, oldValue, _tier1Size);
     }
-    // TODO: M3 missing for threshold
-    // TODO: L1 missing events
+    //  M3 missing for threshold - NOTE: Business logic
+    //  L1 missing events
 
     function setTier2Size(uint256 _tier2Size) external onlyGov {
+        uint256 oldValue = tier2Size;
         tier2Size = _tier2Size;
+        emit ValueChanged(2, oldValue, _tier2Size);
     }
-    // TODO: M3 missing for threshold
-    // TODO: L1 missing events
+    //  M3 missing for threshold - NOTE: Business logic
+    //  L1 missing events
 
     function setTier3Size(uint256 _tier3Size) external onlyGov {
+        uint256 oldValue = tier3Size;
         tier3Size = _tier3Size;
+        emit ValueChanged(3, oldValue, _tier3Size);
     }
-    // TODO: M3 missing for threshold
-    // TODO: L1 missing events
+    //  M3 missing for threshold - NOTE: Business logic
+    //  L1 missing events
 
     function setTier1Factor(uint256 _tier1Factor) external onlyGov {
+        uint256 oldValue = tier1Factor;
         tier1Factor = _tier1Factor;
+        emit ValueChanged(4, oldValue, _tier1Factor);
     }
-    // TODO: M3 missing for threshold
-    // TODO: L1 missing events
+    //  M3 missing for threshold - NOTE: Business logic
+    //  L1 missing events
 
     function setTier2Factor(uint256 _tier2Factor) external onlyGov {
+        uint256 oldValue = tier2Factor;
         tier2Factor = _tier2Factor;
+        emit ValueChanged(5, oldValue, _tier2Factor);
     }
-    // TODO: M3 missing for threshold
-    // TODO: L1 missing events
+    //  M3 missing for threshold - NOTE: Business logic
+    //  L1 missing events
 
     function setTier3Factor(uint256 _tier3Factor) external onlyGov {
+        uint256 oldValue = tier3Factor;
         tier3Factor = _tier3Factor;
+        emit ValueChanged(6, oldValue, _tier3Factor);
     }
-    // TODO: M3 missing for threshold
-    // TODO: L1 missing events
+    //  M3 missing for threshold - NOTE: Business logic
+    //  L1 missing events
 
     function setTierBorrowingRateFactor(uint256 _tierBorrowingRateFactor) external onlyGov {
+        uint256 oldValue = tierBorrowingRateFactor;
         tierBorrowingRateFactor = _tierBorrowingRateFactor;
+        emit ValueChanged(7, oldValue, _tierBorrowingRateFactor);
     }
-    // TODO: M3 missing for threshold
-    // TODO: L1 missing events
+    //  M3 missing for threshold
+    //  L1 missing events
 
     function setFundingFactorForLessOISide(int256 _fundingFactorForLessOISide) external onlyGov {
+        require(_fundingFactorForLessOISide > -1 * FUNDING_RATE_PRECISION, "nffloi");
+        require(_fundingFactorForLessOISide < 1 * FUNDING_RATE_PRECISION, "pffloi");
+        int256 oldValue = fundingFactorForLessOISide;
         fundingFactorForLessOISide = _fundingFactorForLessOISide;
+        emit ValueChangedInt(1, oldValue, _fundingFactorForLessOISide);
     }
-    // TODO: M3 missing for threshold
-    // TODO: L1 missing events
+    //  M3 missing for threshold
+    //  L1 missing events
 
     function setFundingFactorForHighOISide(int256 _fundingFactorForHighOISide) external onlyGov {
+        require(_fundingFactorForHighOISide > -1 * FUNDING_RATE_PRECISION, "nffloi");
+        require(_fundingFactorForHighOISide < 1 * FUNDING_RATE_PRECISION, "pffloi");
+        int256 oldValue = fundingFactorForHighOISide;
         fundingFactorForHighOISide = _fundingFactorForHighOISide;
+        emit ValueChangedInt(2, oldValue, _fundingFactorForHighOISide);
     }
-    // TODO: L1 missing events
+    //  L1 missing events
 
     function setTierBorrowingRateStartTime(uint256 _tierBorrowingRateStartTime) external onlyGov {
+        uint256 oldValue = tierBorrowingRateStartTime;
         tierBorrowingRateStartTime = _tierBorrowingRateStartTime;
+        emit ValueChanged(8, oldValue, _tierBorrowingRateStartTime);
     }
     // M2 check for isContract
 
     function setVault(address _vault) public onlyGov isContract(_vault) {
+        address oldAddress = address(vault);
         vault = IVault(_vault);
+        emit AddressChanged(1, oldAddress, _vault);
     }
     //  M2 check for isContract
 
     function setUtils(address _utils) public onlyGov isContract(_utils) {
+        address oldAddress = address(utils);
         utils = IUtils(_utils);
+        emit AddressChanged(2, oldAddress, _utils);
     }
     //  M2 check for isContract
 
     function setUsdc(address _usdc) public onlyGov isContract(_usdc) {
+        address oldAddress = address(usdc);
         usdc = IERC20(_usdc);
+        emit AddressChanged(3, oldAddress, _usdc);
     }
 
     function getOI(uint256 price, address _token, bool _isLong) public view returns (uint256 finalOI) {

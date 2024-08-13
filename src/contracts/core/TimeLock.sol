@@ -57,6 +57,9 @@ contract Timelock is ITimelock {
         uint256 maxOiImbalance
     );
     event ClearAction(bytes32 action);
+    event AddressChanged(uint256 configCode, address oldAddress, address newAddress);
+    event ValueChanged(uint256 configCode, uint256 oldValue, uint256 newValue);
+    event MapValueChanged(uint256 configCode, bytes32 encodedKey, bytes32 encodedValue);
 
     modifier onlyAdmin() {
         require(msg.sender == admin, "Timelock: admin forbidden");
@@ -73,6 +76,23 @@ contract Timelock is ITimelock {
         _;
     }
 
+    modifier validAddress(address _addr) {
+        require(_addr != address(0), "ZERO");
+        require(_addr != 0x000000000000000000000000000000000000dEaD, "DEAD");
+        _;
+    }
+
+    modifier isContract(address account) {
+        require(account != address(0), "ZERO");
+        require(account != 0x000000000000000000000000000000000000dEaD, "DEAD");
+        uint256 size;
+        assembly {
+            size := extcodesize(account)
+        }
+        require(size > 0, "eoa");
+        _;
+    }
+
     constructor(address _admin, uint256 _buffer, address _mintReceiver, address _llpManager) {
         require(_buffer <= MAX_BUFFER, "Timelock: invalid _buffer");
         admin = _admin;
@@ -80,45 +100,53 @@ contract Timelock is ITimelock {
         mintReceiver = _mintReceiver;
         llpManager = _llpManager;
     }
-    // TODO: L1 missing events
-    // TODO: L4 zero or dead address check
+    //  L1 missing events
+    //  L4 zero or dead address check
 
-    function setAdmin(address _admin) external override onlyAdmin {
+    function setAdmin(address _admin) external override onlyAdmin validAddress(_admin) {
+        address oldAddress = admin;
         admin = _admin;
+        emit AddressChanged(1, oldAddress, _admin); // 1 for admin
     }
-    // TODO: L1 missing events
-    // TODO: L4 zero or dead address check
+    //  L4 zero or dead address check
 
-    function setExternalAdmin(address _target, address _admin) external onlyAdmin {
+    function setExternalAdmin(address _target, address _admin) external onlyAdmin validAddress(_admin) {
         require(_target != address(this), "Timelock: invalid _target");
         IAdmin(_target).setAdmin(_admin);
     }
-    // TODO: L1 missing events
-    // TODO: L4 zero or dead address check
+    //  L1 missing events
+    //  L4 zero or dead address check
 
-    function setContractHandler(address _handler, bool _isActive) external onlyAdmin {
+    function setContractHandler(address _handler, bool _isActive) external onlyAdmin validAddress(_handler) {
+        bool oldValue = isHandler[_handler];
         isHandler[_handler] = _isActive;
+        emit MapValueChanged(1, bytes32(abi.encodePacked(oldValue)), bytes32(abi.encodePacked(_isActive))); // 3 for contract handler
     }
-    // TODO: L1 missing events
-    // TODO: L4 zero or dead address check
+    //  L1 missing events
+    //  L4 zero or dead address check
 
-    function setKeeper(address _keeper, bool _isActive) external onlyAdmin {
+    function setKeeper(address _keeper, bool _isActive) external onlyAdmin validAddress(_keeper) {
+        bool oldValue = isKeeper[_keeper];
         isKeeper[_keeper] = _isActive;
+        emit MapValueChanged(2, bytes32(abi.encodePacked(oldValue)), bytes32(abi.encodePacked(_isActive))); // 1 for keeper
     }
-    // TODO: L1 missing events
+    //  L1 missing events
 
     function setBuffer(uint256 _buffer) external onlyAdmin {
         require(_buffer <= MAX_BUFFER, "Timelock: invalid _buffer");
         require(_buffer > buffer, "Timelock: buffer cannot be decreased");
+        uint256 oldValue = buffer;
         buffer = _buffer;
+        emit ValueChanged(1, oldValue, _buffer); //1 for buffer
     }
-    // TODO: L1 missing events
+    //  L1 missing events
 
     function setMaxLeverage(address _vault, uint256 _maxLeverage, address _token) external onlyAdmin {
         require(_maxLeverage > MAX_LEVERAGE_VALIDATION, "Timelock: invalid _maxLeverage");
         IVault(_vault).setMaxLeverage(_maxLeverage, _token);
+        emit MapValueChanged(3, bytes32(abi.encodePacked(_token)), bytes32(abi.encodePacked(_maxLeverage))); // 3 for max leverage
     }
-    // TODO: L1 missing events
+    //  L1 missing events
 
     function setBorrowingRate(
         address _vault,
@@ -128,9 +156,14 @@ contract Timelock is ITimelock {
         uint256 _borrowingExponent
     ) external onlyKeeperAndAbove {
         require(_borrowingRateFactor < MAX_BORROWING_RATE_FACTOR, "Timelock: invalid _borrowingRateFactor");
+        (uint256 oldBorrowingInterval, uint256 oldBorrowingRateFactor, uint256 oldBorrowingExponent) =
+            IVault(_vault).borrowingRateFactor(token);
         IVault(_vault).setBorrowingRate(token, _borrowingInterval, _borrowingRateFactor, _borrowingExponent);
+        emit ValueChanged(2, oldBorrowingInterval, _borrowingInterval); // 2 for borrowing interval
+        emit ValueChanged(3, oldBorrowingRateFactor, _borrowingRateFactor); // 3 for borrowing rate factor
+        emit ValueChanged(4, oldBorrowingExponent, _borrowingExponent); // 4 for borrowing exponent
     }
-    // TODO: L1 missing events
+    //  L1 missing events
 
     function setFundingRate(
         address _vault,
@@ -140,9 +173,14 @@ contract Timelock is ITimelock {
         uint256 _fundingExponent
     ) external onlyKeeperAndAbove {
         require(_fundingRateFactor < MAX_FUNDING_RATE_FACTOR, "Timelock: invalid _fundingRateFactor");
+        (uint256 oldFundingInterval, uint256 oldFundingRateFactor, uint256 oldFundingExponent) =
+            IVault(_vault).fundingRateFactor(token);
         IVault(_vault).setFundingRate(token, _fundingInterval, _fundingRateFactor, _fundingExponent);
+        emit ValueChanged(5, oldFundingInterval, _fundingInterval); // 5 for funding interval
+        emit ValueChanged(6, oldFundingRateFactor, _fundingRateFactor); // 6 for funding rate factor
+        emit ValueChanged(7, oldFundingExponent, _fundingExponent); // 7 for funding exponent
     }
-    // TODO: L1 missing events
+    //  L1 missing events
 
     function setTokenConfig(address _vault, address _token, uint256 _minProfitBps, uint256 _maxLeverage)
         external
@@ -153,14 +191,34 @@ contract Timelock is ITimelock {
         IVault vault = IVault(_vault);
         require(vault.whitelistedTokens(_token), "Timelock: token not yet whitelisted");
 
-        uint256 tokenDecimals = vault.tokenDecimals(_token);
-        bool isStable = vault.stableTokens(_token);
-        bool canBeCollateralToken = vault.canBeCollateralToken(_token);
-        bool canBeIndexToken = vault.canBeIndexToken(_token);
+        uint256 oldTokenDecimals = vault.tokenDecimals(_token);
+        bool oldIsStable = vault.stableTokens(_token);
+        bool oldCanBeCollateralToken = vault.canBeCollateralToken(_token);
+        bool oldCanBeIndexToken = vault.canBeIndexToken(_token);
+        uint256 oldMaxLeverage = IVault(_vault).maxLeverage(_token);
+        uint256 oldMinProfitBasisPoints = IVault(_vault).minProfitBasisPoints(_token);
+
+        /* (
+            uint256 oldTokenDecimals,
+            uint256 oldMinProfitBps,
+            bool oldIsStable,
+            bool oldCanBeCollateralToken,
+            bool oldCanBeIndexToken,
+            uint256 oldMaxLeverage
+        ) = vault.tokenConfig(_token); */
 
         IVault(_vault).setTokenConfig(
-            _token, tokenDecimals, _minProfitBps, isStable, canBeCollateralToken, canBeIndexToken, _maxLeverage
+            _token,
+            oldTokenDecimals,
+            _minProfitBps,
+            oldIsStable,
+            oldCanBeCollateralToken,
+            oldCanBeIndexToken,
+            _maxLeverage
         );
+
+        emit ValueChanged(8, oldMinProfitBasisPoints, _minProfitBps); // 8 for min profit bps
+        emit ValueChanged(9, oldMaxLeverage, _maxLeverage); // 9 for max leverage
     }
 
     function updateUsdlSupply(uint256 usdlAmount) external onlyKeeperAndAbove {
@@ -184,32 +242,39 @@ contract Timelock is ITimelock {
         require(_cooldownDuration < 2 hours, "Timelock: invalid _cooldownDuration");
         ILlpManager(llpManager).setCooldownDuration(_cooldownDuration);
     }
-    // TODO: L1 missing events
+    //  L1 missing events
 
     function setMaxGlobalLongSize(address _vault, address _token, uint256 _amount) external onlyAdmin {
         IVault(_vault).setMaxGlobalLongSize(_token, _amount);
+        emit MapValueChanged(4, bytes32(abi.encodePacked(_token)), bytes32(abi.encodePacked(_amount)));
     }
-    // TODO: L1 missing events
+    //  L1 missing events
 
     function setMaxGlobalShortSize(address _vault, address _token, uint256 _amount) external onlyAdmin {
         IVault(_vault).setMaxGlobalShortSize(_token, _amount);
+        emit MapValueChanged(5, bytes32(abi.encodePacked(_token)), bytes32(bytes32(abi.encodePacked(_amount))));
     }
-    // TODO: L1 missing events
+    //  L1 missing events
 
-    function removeAdmin(address _token, address _account) external onlyAdmin {
+    function removeAdmin(address _token, address _account) external onlyAdmin validAddress(_account) {
         IYieldToken(_token).removeAdmin(_account);
+        emit MapValueChanged(6, bytes32(abi.encodePacked(_account)), bytes32(abi.encodePacked(false)));
     }
-    // TODO: L1 missing events
+    //  L1 missing events
 
     function setUtils(address _vault, IUtils _utils) external onlyAdmin {
+        address oldAddress = address(IVault(_vault).getUtilsAddress());
         IVault(_vault).setUtils(address(_utils));
+        emit AddressChanged(2, oldAddress, address(_utils));
     }
-    // TODO: L1 missing events
-    // TODO: L4 zero or dead address check
+    //  L1 missing events
+    //  L4 zero or dead address check
 
-    function setMaxGasPrice(address _vault, uint256 _maxGasPrice) external onlyAdmin {
+    function setMaxGasPrice(address _vault, uint256 _maxGasPrice) external onlyAdmin isContract(_vault) {
         require(_maxGasPrice > 5000000000, "Invalid _maxGasPrice");
+        uint256 oldValue = IVault(_vault).maxGasPrice();
         IVault(_vault).setMaxGasPrice(_maxGasPrice);
+        emit ValueChanged(10, oldValue, _maxGasPrice);
     }
 
     function withdrawFees(address _vault, address _token, address _receiver) external onlyAdmin {
@@ -225,9 +290,13 @@ contract Timelock is ITimelock {
     function setInPrivateLiquidationMode(address _vault, bool _inPrivateLiquidationMode) external onlyAdmin {
         IVault(_vault).setInPrivateLiquidationMode(_inPrivateLiquidationMode);
     }
-    // TODO: L4 zero or dead address check
+    //  L4 zero or dead address check
 
-    function setLiquidator(address _vault, address _liquidator, bool _isActive) external onlyAdmin {
+    function setLiquidator(address _vault, address _liquidator, bool _isActive)
+        external
+        onlyAdmin
+        validAddress(_liquidator)
+    {
         IVault(_vault).setLiquidator(_liquidator, _isActive);
     }
 

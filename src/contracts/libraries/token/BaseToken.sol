@@ -27,6 +27,9 @@ contract BaseToken is IERC20, IBaseToken {
     bool public inPrivateTransferMode;
     mapping(address => bool) public isHandler;
 
+    event AddressChanged(uint256 configCode, address oldAddress, address newAddress);
+    event ValueChanged(uint256 configCode, uint256 oldValue, uint256 newValue);
+
     modifier onlyGov() {
         require(msg.sender == gov, "BaseToken: forbidden");
         _;
@@ -37,52 +40,70 @@ contract BaseToken is IERC20, IBaseToken {
         _;
     }
 
+    modifier validAddress(address _addr) {
+        require(_addr != address(0), "ZERO");
+        require(_addr != 0x000000000000000000000000000000000000dEaD, "DEAD");
+        _;
+    }
+
     constructor(string memory _name, string memory _symbol, uint256 _initialSupply) {
         name = _name;
         symbol = _symbol;
         gov = msg.sender;
         _mint(msg.sender, _initialSupply);
     }
-    // TODO: L1 missing events
-    // TODO: L4 zero or dead address check
+    //  L1 missing events
+    //  L4 zero or dead address check
 
-    function setGov(address _gov) external onlyGov {
+    function setGov(address _gov) external onlyGov validAddress(_gov) {
+        address oldAddress = gov;
         gov = _gov;
+        emit AddressChanged(1, oldAddress, _gov); // 1 for gov
     }
-    // TODO: L1 missing events
-    // TODO: L4 zero or dead address check
+    //  L1 missing events
 
     function setInfo(string memory _name, string memory _symbol) external onlyGov {
+        string memory oldName = name;
+        string memory oldSymbol = symbol;
         name = _name;
         symbol = _symbol;
+        emit ValueChanged(2, uint256(bytes32(abi.encodePacked(oldName))), uint256(bytes32(abi.encodePacked(_name)))); // 2 for name
+        emit ValueChanged(3, uint256(bytes32(abi.encodePacked(oldSymbol))), uint256(bytes32(abi.encodePacked(_symbol)))); // 3 for symbol
     }
-    // TODO: L1 missing events
-    // TODO: L4 zero or dead address check
+    //  L1 missing events
+    //  L4 zero or dead address check
 
-    function addAdmin(address _account) external onlyGov {
+    function addAdmin(address _account) external onlyGov validAddress(_account) {
         admins[_account] = true;
+        emit AddressChanged(2, address(0), _account); // 2 for addAdmin
     }
-    // TODO: L1 missing events
-    // TODO: L4 zero or dead address check
+    //  L1 missing events
+    //  L4 zero or dead address check
 
-    function removeAdmin(address _account) external override onlyGov {
+    function removeAdmin(address _account) external override onlyGov validAddress(_account) {
         admins[_account] = false;
+        emit AddressChanged(3, _account, address(0)); // 3 for removeAdmin
     }
 
     // to help users who accidentally send their tokens to this contract
     function withdrawToken(address _token, address _account, uint256 _amount) external override onlyGov {
         IERC20(_token).safeTransfer(_account, _amount);
+        emit ValueChanged(4, uint256(bytes32(abi.encodePacked(_token, _account))), _amount); // 4 for withdrawToken
     }
-    // TODO: L1 missing events
+    //  L1 missing events
 
     function setInPrivateTransferMode(bool _inPrivateTransferMode) external override onlyGov {
+        bool oldValue = inPrivateTransferMode;
         inPrivateTransferMode = _inPrivateTransferMode;
+        emit ValueChanged(5, oldValue ? 1 : 0, _inPrivateTransferMode ? 1 : 0); // 5 for inPrivateTransferMode
     }
-    // TODO: L1 missing events
-    // TODO: L4 zero or dead address check
+    //  L1 missing events
+    //  L4 zero or dead address check
 
-    function setHandler(address _handler, bool _isActive) external onlyGov {
+    function setHandler(address _handler, bool _isActive) external onlyGov validAddress(_handler) {
+        bool oldValue = isHandler[_handler];
         isHandler[_handler] = _isActive;
+        emit ValueChanged(6, oldValue ? 1 : 0, _isActive ? 1 : 0); // 8 for setHandler
     }
 
     function totalStaked() external view override returns (uint256) {

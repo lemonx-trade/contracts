@@ -44,8 +44,13 @@ contract PythPriceFeed is IPriceFeed, Governable {
     event NoDarkOraclePrice(address token, uint256 time);
     event PythPricesDelayed(address token, uint256 currentTime, uint256 priceTime);
 
+    event AddressChanged(uint256 configCode, address oldAddress, address newAddress);
+    event ValueChanged(uint256 configCode, uint256 oldValue, uint256 newValue);
+    event MapValueChanged(uint256 configCode, bytes32 encodedKey, bytes32 encodedValue);
+
     modifier isContract(address account) {
-        require(account != address(0), "nulladd");
+        require(account != address(0), "ZERO");
+        require(account != 0x000000000000000000000000000000000000dEaD, "DEAD");
         uint256 size;
         assembly {
             size := extcodesize(account)
@@ -66,40 +71,52 @@ contract PythPriceFeed is IPriceFeed, Governable {
         _;
     }
     //  M2 check for isContract
-    // TODO: L1 missing events
+    //  L1 missing events
 
     function setOrderManager(address _orderManager) external onlyGov isContract(_orderManager) {
+        address oldAddress = address(orderManager);
         orderManager = IOrderManager(_orderManager);
+        emit AddressChanged(1, oldAddress, _orderManager); // 1 for orderManager
     }
     //  M2 check for isContract
-    // TODO: L1 missing events
+    //  L1 missing events
 
     function setRewardRouter(address _rewardRouter) external onlyGov isContract(_rewardRouter) {
+        address oldAddress = address(rewardRouter);
         rewardRouter = IRewardRouter(_rewardRouter);
+        emit AddressChanged(2, oldAddress, _rewardRouter); // 2 for rewardRouter
     }
 
     function setUpdater(address _updater) external onlyGov {
         updater[_updater] = true;
+        emit MapValueChanged(1, bytes32(abi.encodePacked(_updater)), bytes32(abi.encodePacked(true))); // 1 for updater
     }
 
     function removeUpdater(address _updater) external onlyGov {
         updater[_updater] = false;
+        emit MapValueChanged(2, bytes32(abi.encodePacked(_updater)), bytes32(abi.encodePacked(false))); // 2 for updater
     }
     // M2 check for isContract
-    // TODO: L1 missing events
+    //  L1 missing events
 
     function setPythContract(address _pythContract) external onlyGov isContract(_pythContract) {
+        address oldAddress = pythContract;
         pythContract = _pythContract;
+        emit AddressChanged(3, oldAddress, _pythContract); // 3 for pythContract
     }
-    // TODO: L1 missing events
+    //  L1 missing events
 
     function setMaxAllowedDelay(uint256 _maxAllowedDelay) external onlyGov {
+        uint256 oldValue = maxAllowedDelay;
         maxAllowedDelay = _maxAllowedDelay;
+        emit ValueChanged(1, oldValue, _maxAllowedDelay); // 1 for maxAllowedDelay
     }
-    // TODO: L1 missing events
+    //  L1 missing events
 
     function setMaxAllowedDelta(uint256 _maxAllowedDelta) external onlyGov {
+        uint256 oldValue = maxAllowedDelta;
         maxAllowedDelta = _maxAllowedDelta;
+        emit ValueChanged(2, oldValue, _maxAllowedDelta); // 2 for maxAllowedDelta
     }
 
     function updateTokenIdMapping(address _token, bytes32 _priceId) external onlyGov {

@@ -39,14 +39,24 @@ contract PriceFeed is IPriceFeed, Governable {
     mapping(address => uint256) public slippage;
 
     event PriceSet(TokenPrice priceSet);
+    event AddressChanged(uint256 configCode, address oldAddress, address newAddress);
+    event ValueChanged(uint256 configCode, uint256 oldValue, uint256 newValue);
+    event MapValueChanged(uint256 configCode, bytes32 encodedKey, bytes32 encodedValue);
 
     modifier isContract(address account) {
-        require(account != address(0), "nulladd");
+        require(account != address(0), "ZERO");
+        require(account != 0x000000000000000000000000000000000000dEaD, "DEAD");
         uint256 size;
         assembly {
             size := extcodesize(account)
         }
         require(size > 0, "eoa");
+        _;
+    }
+
+    modifier validAddress(address _addr) {
+        require(_addr != address(0), "ZERO");
+        require(_addr != 0x000000000000000000000000000000000000dEaD, "DEAD");
         _;
     }
 
@@ -61,48 +71,59 @@ contract PriceFeed is IPriceFeed, Governable {
         _;
     }
     //  M2 check for isContract
-    // TODO: L1 missing events
-    // TODO: L4 zero or dead address check
+    //  L1 missing events
+    //  L4 zero or dead address check
 
     function setOrderManager(address _orderManager) external onlyGov isContract(_orderManager) {
+        address oldAddress = address(orderManager);
         orderManager = IOrderManager(_orderManager);
+        emit AddressChanged(1, oldAddress, _orderManager); // 1 for orderManager
     }
     // M2 check for isContract
-    // TODO: L1 missing events
-    // TODO: L4 zero or dead address check
+    //  L1 missing events
+    //  L4 zero or dead address check
 
     function setRewardRouter(address _rewardRouter) external onlyGov isContract(_rewardRouter) {
+        address oldAddress = address(rewardRouter);
         rewardRouter = IRewardRouter(_rewardRouter);
+        emit AddressChanged(2, oldAddress, _rewardRouter); // 2 for rewardRouter
     }
-    // TODO: L1 missing events
-    // TODO: L4 zero or dead address check
+    //  L1 missing events
+    //  L4 zero or dead address check
 
-    function setUpdater(address _updater) external onlyGov {
+    function setUpdater(address _updater) external onlyGov validAddress(_updater) {
         updater[_updater] = true;
+        emit MapValueChanged(1, bytes32(abi.encodePacked(_updater)), bytes32(abi.encodePacked(true))); // 3 for updater
     }
-    // TODO: L1 missing events
-    // TODO: L4 zero or dead address check
+    //  L1 missing events
+    //  L4 zero or dead address check
 
-    function removeUpdater(address _updater) external onlyGov {
+    function removeUpdater(address _updater) external onlyGov validAddress(_updater) {
         updater[_updater] = false;
+        emit MapValueChanged(2, bytes32(abi.encodePacked(_updater)), bytes32(abi.encodePacked(false))); // 3 for updater
     }
-    // TODO: M3 missing for threshold
-    // TODO: L1 missing events
+    //  M3 missing for threshold - NOTE: Business logic
+    //  L1 missing events
 
     function setMaxAllowedDelay(uint256 _maxAllowedDelay) external onlyGov {
+        uint256 oldValue = maxAllowedDelay;
         maxAllowedDelay = _maxAllowedDelay;
+        emit ValueChanged(1, oldValue, _maxAllowedDelay); // 4 for maxAllowedDelay
     }
-    // TODO: M3 missing for threshold
-    // TODO: L1 missing events
+    //  M3 missing for threshold - NOTE: Business logic
+    //  L1 missing events
 
     function setMaxAllowedDelta(uint256 _maxAllowedDelta) external onlyGov {
+        uint256 oldValue = maxAllowedDelta;
         maxAllowedDelta = _maxAllowedDelta;
+        emit ValueChanged(2, oldValue, _maxAllowedDelta); // 5 for maxAllowedDelta
     }
-    // TODO: M3 missing for threshold
-    // TODO: L1 missing events
+    //  M3 missing for threshold
 
-    function setSlippage(address _indexToken, uint256 _slippage) external onlyGov {
+    function setSlippage(address _indexToken, uint256 _slippage) external onlyGov validAddress(_indexToken) {
+        require(_slippage <= SLIPPAGE_PRECISION, "highSlip");
         slippage[_indexToken] = _slippage;
+        emit MapValueChanged(3, bytes32(abi.encodePacked(_indexToken)), bytes32(abi.encodePacked(_slippage))); // 6 for slippage
     }
 
     function updateTokenIdMapping(address _token, bytes32 _priceId) external onlyGov {

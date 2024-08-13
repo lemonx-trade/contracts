@@ -27,6 +27,9 @@ contract YieldToken is IERC20, IYieldToken {
     bool public inWhitelistMode;
     mapping(address => bool) public whitelistedHandlers;
 
+    event AddressChanged(uint256 configCode, address oldAddress, address newAddress);
+    event ValueChanged(uint256 configCode, uint256 oldValue, uint256 newValue);
+
     modifier onlyGov() {
         require(msg.sender == gov, "YieldToken: forbidden");
         _;
@@ -37,6 +40,12 @@ contract YieldToken is IERC20, IYieldToken {
         _;
     }
 
+    modifier validAddress(address _addr) {
+        require(_addr != address(0), "ZERO");
+        require(_addr != 0x000000000000000000000000000000000000dEaD, "DEAD");
+        _;
+    }
+
     constructor(string memory _name, string memory _symbol, uint256 _initialSupply) {
         name = _name;
         symbol = _symbol;
@@ -44,57 +53,79 @@ contract YieldToken is IERC20, IYieldToken {
         admins[msg.sender] = true;
         _mint(msg.sender, _initialSupply);
     }
-    // TODO: L1 missing events
-    // TODO: L4 zero or dead address check
+    //  L1 missing events
+    //  L4 zero or dead address check
 
-    function setGov(address _gov) external onlyGov {
+    function setGov(address _gov) external onlyGov validAddress(_gov) {
+        address oldAddress = gov;
         gov = _gov;
+        emit AddressChanged(1, oldAddress, _gov); // 1 for gov
     }
-    // TODO: L1 missing events
+    //  L1 missing events
 
     function setInfo(string memory _name, string memory _symbol) external onlyGov {
+        string memory oldName = name;
+        string memory oldSymbol = symbol;
         name = _name;
         symbol = _symbol;
+        emit ValueChanged(2, uint256(bytes32(abi.encodePacked(oldName))), uint256(bytes32(abi.encodePacked(_name)))); // 2 for name
+        emit ValueChanged(3, uint256(bytes32(abi.encodePacked(oldSymbol))), uint256(bytes32(abi.encodePacked(_symbol)))); // 3 for symbol
     }
-    // TODO: L1 missing events
-    // TODO: L4 zero or dead address check
+    //  L1 missing events
+    //  L4 zero or dead address check
 
-    function addAdmin(address _account) external onlyGov {
+    function addAdmin(address _account) external onlyGov validAddress(_account) {
         admins[_account] = true;
+        emit AddressChanged(2, address(0), _account); // 2 for addAdmin
     }
-    // TODO: L4 zero or dead address check
+    //  L4 zero or dead address check
 
-    function removeAdmin(address _account) external override onlyGov {
+    function removeAdmin(address _account) external override onlyGov validAddress(_account) {
         admins[_account] = false;
+        emit AddressChanged(3, _account, address(0)); // 3 for removeAdmin
     }
 
     // to help users who accidentally send their tokens to this contract
-    function withdrawToken(address _token, address _account, uint256 _amount) external onlyGov {
+    function withdrawToken(address _token, address _account, uint256 _amount)
+        external
+        onlyGov
+        validAddress(_token)
+        validAddress(_account)
+    {
         IERC20(_token).safeTransfer(_account, _amount);
+        emit AddressChanged(4, _token, _account); // 4 for withdrawToken
     }
-    // TODO: L1 missing events
+    //  L1 missing events
 
     function setInWhitelistMode(bool _inWhitelistMode) external onlyGov {
+        bool oldValue = inWhitelistMode;
         inWhitelistMode = _inWhitelistMode;
+        emit ValueChanged(4, oldValue ? 1 : 0, _inWhitelistMode ? 1 : 0); // 7 for inWhitelistMode
     }
-    // TODO: L1 missing events
+    //  L1 missing events
 
-    function setWhitelistedHandler(address _handler, bool _isWhitelisted) external onlyGov {
+    function setWhitelistedHandler(address _handler, bool _isWhitelisted) external onlyGov validAddress(_handler) {
+        bool oldValue = whitelistedHandlers[_handler];
         whitelistedHandlers[_handler] = _isWhitelisted;
+        emit ValueChanged(5, oldValue ? 1 : 0, _isWhitelisted ? 1 : 0); // 5 for whitelistedHandlers
     }
-    // TODO: L1 missing events
+    //  L1 missing events
 
-    function addNonStakingAccount(address _account) external onlyAdmin {
+    function addNonStakingAccount(address _account) external onlyAdmin validAddress(_account) {
         require(!nonStakingAccounts[_account], "YieldToken: _account already marked");
         nonStakingAccounts[_account] = true;
         nonStakingSupply = nonStakingSupply + (balances[_account]);
+        emit AddressChanged(5, address(0), _account); // 5 for addNonStakingAccount
+        emit ValueChanged(6, nonStakingSupply - balances[_account], nonStakingSupply); // 6 for nonStakingSupply
     }
-    // TODO: L1 missing events
+    //  L1 missing events
 
-    function removeNonStakingAccount(address _account) external onlyAdmin {
+    function removeNonStakingAccount(address _account) external onlyAdmin validAddress(_account) {
         require(nonStakingAccounts[_account], "YieldToken: _account not marked");
         nonStakingAccounts[_account] = false;
         nonStakingSupply = nonStakingSupply - (balances[_account]);
+        emit AddressChanged(6, _account, address(0)); // 6 for removeNonStakingAccount
+        emit ValueChanged(7, nonStakingSupply + balances[_account], nonStakingSupply); // 7 for nonStakingSupply
     }
 
     function totalStaked() external view override returns (uint256) {

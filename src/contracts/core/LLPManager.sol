@@ -52,8 +52,13 @@ contract LlpManager is ReentrancyGuard, Governable, ILlpManager {
         uint256 amountOut
     );
 
+    event AddressChanged(uint256 configCode, address oldAddress, address newAddress);
+    event ValueChanged(uint256 configCode, uint256 oldValue, uint256 newValue);
+    event MapValueChanged(uint256 configCode, bytes32 encodedKey, bytes32 encodedValue);
+
     modifier isContract(address account) {
-        require(account != address(0), "nulladd");
+        require(account != address(0), "ZERO");
+        require(account != 0x000000000000000000000000000000000000dEaD, "DEAD");
         uint256 size;
         assembly {
             size := extcodesize(account)
@@ -79,54 +84,70 @@ contract LlpManager is ReentrancyGuard, Governable, ILlpManager {
         maxPoolValue = _maxPoolValue;
     }
     //  M2 check for isContract
-    // TODO: L1 missing events
+    //  L1 missing events
 
     function setUtils(address _utils) external onlyGov isContract(_utils) {
+        address old_address = address(utils);
         utils = IUtils(_utils);
+        emit AddressChanged(1, old_address, _utils); // 1 for utils
     }
-    // TODO: L1 missing events
+    //  L1 missing events
 
     function setHandler(address _handler, bool _isActive) external onlyGov {
         isHandler[_handler] = _isActive;
+        emit MapValueChanged(1, bytes32(abi.encodePacked(_handler)), bytes32(abi.encodePacked(_isActive))); // 1 for isHandler
     }
-    // TODO: L1 missing events
+    //  L1 missing events
 
     function whiteListToken(address token) public onlyGov {
         whiteListedTokens[token] = true;
+        emit MapValueChanged(2, bytes32(abi.encodePacked(token)), bytes32(abi.encodePacked(true))); // 2 for whiteListedTokens
     }
-    // TODO: L1 missing events
+    //  L1 missing events
 
     function removeFromWhiteListToken(address token) public onlyGov {
         whiteListedTokens[token] = false;
+        emit MapValueChanged(3, bytes32(abi.encodePacked(token)), bytes32(abi.encodePacked(false))); // 2 for whiteListedTokens
     }
-    // TODO: L1 missing events
+    //  L1 missing events
+    //  M3 Missing threshold - NOTE: Business logic  Can't be a predetermined threshold
 
     function setMaxPoolValue(uint256 _maxPoolValue) public onlyGov {
+        uint256 oldValue = maxPoolValue;
         maxPoolValue = _maxPoolValue;
+        emit ValueChanged(1, oldValue, _maxPoolValue); // 1 for maxPoolValue
     }
-    // TODO: L1 missing events
+    //  L1 missing events
 
     function setCooldownDuration(uint256 _cooldownDuration) external override onlyGov {
         require(_cooldownDuration <= MAX_COOLDOWN_DURATION, "LlpManager: invalid _cooldownDuration");
+        uint256 oldValue = cooldownDuration;
         cooldownDuration = _cooldownDuration;
+        emit ValueChanged(2, oldValue, _cooldownDuration); // 2 for cooldownDuration
     }
     //  M2 check for isContract
-    // TODO: L1 missing events
+    //  L1 missing events
 
     function setVault(address _vault) external onlyGov isContract(_vault) {
+        address oldValue = address(vault);
         vault = IVault(_vault);
+        emit AddressChanged(2, oldValue, _vault); // 3 for vault
     }
     //  M2 check for isContract
-    // TODO: L1 missing events
+    //  L1 missing events
 
     function setUsdl(address _usdl) external onlyGov isContract(_usdl) {
+        address oldValue = usdl;
         usdl = _usdl;
+        emit AddressChanged(3, oldValue, _usdl); // 4 for usdl
     }
     //  M2 check for isContract
-    // TODO: L1 missing events
+    //  L1 missing events
 
     function setLlp(address _llp) external onlyGov isContract(_llp) {
+        address oldAddress = _llp;
         llp = _llp;
+        emit AddressChanged(4, oldAddress, _llp); // 5 for llp
     }
 
     function addLiquidityForAccount(

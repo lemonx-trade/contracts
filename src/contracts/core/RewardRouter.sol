@@ -42,6 +42,9 @@ contract RewardRouter is IRewardRouter, ReentrancyGuard, Governable {
     event Mintllp(address indexed account, uint256 amount);
     event Burnllp(address indexed account, uint256 amount);
 
+    event AddressChanged(uint256 configCode, address oldAddress, address newAddress);
+    event ValueChanged(uint256 configCode, uint256 oldValue, uint256 newValue);
+
     function initialize(address _llp, address _llpManager, address _feeLlpTracker) external onlyGov {
         require(!isInitialized, "RewardRouter: already initialized");
         isInitialized = true;
@@ -51,7 +54,8 @@ contract RewardRouter is IRewardRouter, ReentrancyGuard, Governable {
     }
 
     modifier isContract(address account) {
-        require(account != address(0), "nulladd");
+        require(account != address(0), "ZERO");
+        require(account != 0x000000000000000000000000000000000000dEaD, "DEAD");
         uint256 size;
         assembly {
             size := extcodesize(account)
@@ -60,37 +64,49 @@ contract RewardRouter is IRewardRouter, ReentrancyGuard, Governable {
         _;
     }
 
+    modifier validAddress(address _addr) {
+        require(_addr != address(0), "ZERO");
+        require(_addr != 0x000000000000000000000000000000000000dEaD, "DEAD");
+        _;
+    }
+
     modifier onlyKeeper() {
         require(isKeeper[msg.sender] || (msg.sender == address(this)), "RewardRouter: Not keeper");
         _;
     }
     //  M2 check for isContract
-    //  L1 missing events
+    //   L1 missing events
 
     function setFeeLlpTracker(address _feeLlpTracker) external onlyGov isContract(_feeLlpTracker) {
+        address oldAddress = feeLlpTracker;
         feeLlpTracker = _feeLlpTracker;
+        emit AddressChanged(1, oldAddress, _feeLlpTracker); // 1 for feeLlpTracker
     }
     //  M2 check for isContract
-    // TODO: L1 missing events
+    //  L1 missing events
 
     function setLlpManager(address _llpManager) external onlyGov isContract(_llpManager) {
+        address oldAddress = llpManager;
         llpManager = _llpManager;
+        emit AddressChanged(2, oldAddress, _llpManager); // 2 for llpManager
     }
     //  M2 check for isContract
-    // TODO: L1 missing events
+    //  L1 missing events
 
     function setLlp(address _llp) external onlyGov isContract(_llp) {
+        address oldAddress = llp;
         llp = _llp;
+        emit AddressChanged(3, oldAddress, _llp); // 3 for llp
     }
     // TODO: M1 ensure less than 25% update
-    // TODO: M3 missing for threshold
+    //  M3 missing for threshold - NOTE: Business logic
 
     function setMinExecutionFee(uint256 _minExecutionFee) external onlyGov {
         minExecutionFee = _minExecutionFee;
     }
-    // TODO: L4 zero or dead address check
+    //  L4 zero or dead address check
 
-    function setKeeperStatus(address newKeeper, bool status) external onlyGov {
+    function setKeeperStatus(address newKeeper, bool status) external onlyGov validAddress(newKeeper) {
         isKeeper[newKeeper] = status;
     }
 

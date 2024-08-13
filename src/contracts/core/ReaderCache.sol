@@ -16,8 +16,12 @@ contract ReaderCache is Governable {
     ILLP public llp;
     ILLP public fLLP;
 
+    event AddressChanged(uint256 configCode, address oldAddress, address newAddress);
+    event ValueChanged(uint256 configCode, uint256 oldValue, uint256 newValue);
+
     modifier isContract(address account) {
-        require(account != address(0), "nulladd");
+        require(account != address(0), "ZERO");
+        require(account != 0x000000000000000000000000000000000000dEaD, "DEAD");
         uint256 size;
         assembly {
             size := extcodesize(account)
@@ -34,34 +38,44 @@ contract ReaderCache is Governable {
         fLLP = ILLP(_fLLP);
     }
     //  M2 check for isContract
-    // TODO: L1 missing events
+    //  L1 missing events
 
     function setVault(address _vault) external onlyGov isContract(_vault) {
+        address oldAddress = address(vault);
         vault = IVault(_vault);
+        emit AddressChanged(1, oldAddress, _vault);
     }
     //  M2 check for isContract
-    // TODO: L1 missing events
+    //  L1 missing events
 
     function setUtils(address _utils) external onlyGov isContract(_utils) {
+        address oldAddress = address(utils);
         utils = IUtils(_utils);
+        emit AddressChanged(2, oldAddress, _utils);
     }
     //  M2 check for isContract
-    // TODO: L1 missing events
+    //  L1 missing events
 
     function setReaderContract(address _readerContract) external onlyGov isContract(_readerContract) {
+        address oldAddress = address(readerContract);
         readerContract = IReaderContract(_readerContract);
+        emit AddressChanged(3, oldAddress, _readerContract);
     }
     //  M2 check for isContract
-    // TODO: L1 missing events
+    //  L1 missing events
 
     function setLLP(address _llp) external onlyGov isContract(_llp) {
+        address oldAddress = address(llp);
         llp = ILLP(_llp);
+        emit AddressChanged(4, oldAddress, _llp);
     }
     //  M2 check for isContract
-    // TODO: L1 missing events
+    //  L1 missing events
 
     function setFLLP(address _fLLP) external onlyGov isContract(_fLLP) {
+        address oldAddress = address(fLLP);
         fLLP = ILLP(_fLLP);
+        emit AddressChanged(5, oldAddress, _fLLP);
     }
 
     function getLiquidatorCache(

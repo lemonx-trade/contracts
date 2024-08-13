@@ -37,13 +37,16 @@ contract RewardTracker is IERC20, ReentrancyGuard, IRewardTracker, Governable {
     mapping(address => bool) public isHandler;
     address public rewardToken;
     uint256 public rewardPrecision = 1000000;
-    // TODO: L3 missing visibility
-    address admin;
+    //  L3 missing visibility
+    address internal admin;
     uint256 public cummulativeRewardPerLPToken = 0;
 
     event Claim(address indexed fundingAccount, address indexed receiver, uint256 amount);
     event Stakellp(address indexed fundingAccount, address indexed receiver, uint256 amount);
     event Unstakellp(address indexed fundingAccount, address indexed receiver, uint256 amount);
+
+    event AddressChanged(uint256 configCode, address oldAddress, address newAddress);
+    event ValueChanged(uint256 configCode, uint256 oldValue, uint256 newValue);
 
     constructor(string memory _name, string memory _symbol) {
         name = _name;
@@ -63,30 +66,51 @@ contract RewardTracker is IERC20, ReentrancyGuard, IRewardTracker, Governable {
         admin = _admin;
     }
 
+    modifier isContract(address account) {
+        require(account != address(0), "ZERO");
+        require(account != 0x000000000000000000000000000000000000dEaD, "DEAD");
+        uint256 size;
+        assembly {
+            size := extcodesize(account)
+        }
+        require(size > 0, "eoa");
+        _;
+    }
+
+    modifier validAddress(address _addr) {
+        require(_addr != address(0), "ZERO");
+        require(_addr != 0x000000000000000000000000000000000000dEaD, "DEAD");
+        _;
+    }
+
     function onlyAdmin() internal view {
         require(msg.sender == admin, "RewardTracker: forbidden incorrect admin");
     }
-    // TODO: L4 zero or dead address check
+    //  L4 zero or dead address check
 
-    function setDepositToken(address _depositToken, bool _isDepositToken) external onlyGov {
+    function setDepositToken(address _depositToken, bool _isDepositToken) external onlyGov isContract(_depositToken) {
         isDepositToken[_depositToken] = _isDepositToken;
     }
-    // TODO: M3 missing for threshold
-    // TODO: L1 missing events
+    //  M3 missing for threshold - NOTE: Business logic
+    //  L1 missing events
 
     function setRewardPrecision(uint256 _rewardPrecision) public onlyGov {
+        uint256 oldValue = rewardPrecision;
         rewardPrecision = _rewardPrecision;
+        emit ValueChanged(1, oldValue, _rewardPrecision);
     }
-    // TODO: L4 zero or dead address check
+    //  L4 zero or dead address check
 
-    function setHandler(address _handler, bool _isActive) external onlyGov {
+    function setHandler(address _handler, bool _isActive) external onlyGov validAddress(_handler) {
         isHandler[_handler] = _isActive;
     }
-    // TODO: M3 missing for threshold
-    // TODO: L1 missing events
+    //  M3 missing for threshold - NOTE: Business logic
+    //  L1 missing events
 
     function setCummulativeRewardRate(uint256 _cummulativeRewardPerLPToken) public onlyGov {
+        uint256 oldValue = cummulativeRewardPerLPToken;
         cummulativeRewardPerLPToken = _cummulativeRewardPerLPToken;
+        emit ValueChanged(2, oldValue, _cummulativeRewardPerLPToken);
     }
 
     function withdrawToken(address _token, address _account, uint256 _amount) external onlyGov {

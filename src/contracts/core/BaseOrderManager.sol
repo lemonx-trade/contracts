@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
-// TODO: L2 floating pragrma solidity version
-pragma solidity ^0.8.19;
+//  L2 floating pragrma solidity version
+pragma solidity 0.8.19;
 
 import "../libraries/token/SafeERC20.sol";
 import "../libraries/token/IERC20.sol";
@@ -27,14 +27,24 @@ contract BaseOrderManager {
 
     event LeverageDecreased(uint256 collateralDelta, uint256 prevLeverage, uint256 nextLeverage);
     event WithdrawFees(address token, address receiver, uint256 amount);
+    event AddressChanged(uint256 configCode, address oldAddress, address newAddress);
+    event ValueChanged(uint256 configCode, uint256 oldValue, uint256 newValue);
+    event MapValueChanged(uint256 configCode, bytes32 encodedKey, bytes32 encodedValue);
 
     modifier onlyAdmin() {
         require(msg.sender == admin, "BM:403");
         _;
     }
 
+    modifier validAddress(address _addr) {
+        require(_addr != address(0), "ZERO");
+        require(_addr != 0x000000000000000000000000000000000000dEaD, "DEAD");
+        _;
+    }
+
     modifier isContract(address account) {
-        require(account != address(0), "nulladd");
+        require(account != address(0), "ZERO");
+        require(account != 0x000000000000000000000000000000000000dEaD, "DEAD");
         uint256 size;
         assembly {
             size := extcodesize(account)
@@ -51,28 +61,36 @@ contract BaseOrderManager {
         depositFee = _depositFee;
     }
     // TODO: M2 check for isContract ? -> do we need to update it
-    // TODO: L1 missing events
+    //  L1 missing events
 
     function setAdmin(address _admin) external onlyAdmin {
+        address old_address = admin;
         admin = _admin;
+        emit AddressChanged(1, old_address, _admin); // 1 for admin
     }
     //  M2 check for isContract
-    // TODO: L1 missing events
+    //  L1 missing events
 
     function setVault(address _vault) external onlyAdmin isContract(_vault) {
+        address old_address = vault;
         vault = _vault;
+        emit AddressChanged(2, old_address, _vault); // 2 for utils
     }
     //  M2 check for isContract
-    // TODO: L1 missing events
+    //  L1 missing events
 
     function setUtils(address _utils) external onlyAdmin isContract(_utils) {
+        address old_address = utils;
         utils = _utils;
+        emit AddressChanged(3, old_address, _utils); // 3 for utils
     }
     // TODO: M1 ensure less than 25% update
-    // TODO: L1 missing events
+    //  L1 missing events
 
     function setDepositFee(uint256 _fee) external onlyAdmin {
+        uint256 old_value = depositFee;
         depositFee = _fee;
+        emit ValueChanged(1, old_value, _fee);
     }
 
     function _increasePosition(

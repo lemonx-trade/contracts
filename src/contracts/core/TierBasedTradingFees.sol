@@ -13,14 +13,24 @@ contract TierBasedTradingFees is ITierBasedTradingFees, Governable {
         require(tierUpdater[msg.sender], "Utils: Not updater");
         _;
     }
-    // TODO: L4 zero or dead address check
 
-    function setTierUpdater(address account, bool status) external onlyGov {
+    modifier validAddress(address _addr) {
+        require(_addr != address(0), "ZERO");
+        require(_addr != 0x000000000000000000000000000000000000dEaD, "DEAD");
+        _;
+    }
+    //  L4 zero or dead address check
+
+    function setTierUpdater(address account, bool status) external onlyGov validAddress(account) {
         tierUpdater[account] = status;
     }
-    // TODO: L4 zero or dead address check
+    //  L4 zero or dead address check
 
-    function setTierBasedTradingBasisPoints(address trader, uint256 basisPoints) external onlyTierUpdater {
+    function setTierBasedTradingBasisPoints(address trader, uint256 basisPoints)
+        external
+        onlyTierUpdater
+        validAddress(trader)
+    {
         tierBasedTradingBasisPoints[trader] = basisPoints;
     }
 }

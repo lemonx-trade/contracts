@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.19;
+pragma solidity 0.8.19;
 
 import "../libraries/token/SafeERC20.sol";
 import "../libraries/utils/ReentrancyGuard.sol";
@@ -23,8 +23,8 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
     bytes32[] public increasePositionRequestKeys;
     mapping(address => uint256) public decreasePositionsIndex;
     mapping(bytes32 => StructsUtils.DecreasePositionRequest) public decreasePositionRequests;
-    // TODO: L3 missing visibility
-    bytes32[] decreasePositionRequestKeys;
+    //  L3 missing visibility
+    bytes32[] internal decreasePositionRequestKeys;
     mapping(address => bool) public isPositionKeeper;
     uint256 public minBlockDelayKeeper;
     uint256 public minTimeDelayPublic;
@@ -223,50 +223,67 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
         require(isOrderKeeper[msg.sender], "OM:403");
         _;
     }
-    // TODO: M3 missing for threshold
-    // TODO: L1 missing events
+
+    //  M3 missing for threshold - NOTE: Business logic
+    //  L1 missing events
 
     function setMinPurchaseAmount(uint256 _marketOrder, uint256 _limitOrder) external onlyAdmin {
+        uint256 oldValueVariableOne = _marketOrder;
+        uint256 oldValueVariableTwo = _limitOrder;
         minPurchaseUSDAmountMarketOrder = _marketOrder;
         minPurchaseUSDAmountLimitOrder = _limitOrder;
+        emit ValueChanged(1, oldValueVariableOne, _marketOrder);
+        emit ValueChanged(2, oldValueVariableTwo, _limitOrder);
     }
 
     function setPositionKeeper(address _account, bool _isActive) external onlyAdmin {
         isPositionKeeper[_account] = _isActive;
         emit SetPositionKeeper(_account, _isActive);
     }
-    // TODO: M3 missing for threshold
-    // TODO: L1 missing events
+    //  M3 missing for threshold
+    //  L1 missing events
 
     function setMaxTPMultiplier(uint256 _maxProfitMultiplier) external onlyAdmin {
+        require(_maxProfitMultiplier >= 1, "mpm");
+        uint256 oldValue = maxProfitMultiplier;
         maxProfitMultiplier = _maxProfitMultiplier;
+        emit ValueChanged(3, oldValue, _maxProfitMultiplier); // 2 for utils
     }
-    // TODO: M3 missing for threshold
-    // TODO: L1 missing events
+    //  M3 missing for threshold - NOTE: Business logic
+    //  L1 missing events
 
     function setMinExecutionFeeMarketOrder(
         uint256 _minExecutionFeeIncreaseMarketOrder,
         uint256 _minExecutionFeeDecreaseMarketOrder
     ) external onlyAdmin {
+        uint256 oldValueVariableOne = _minExecutionFeeIncreaseMarketOrder;
+        uint256 oldValueVariableTwo = _minExecutionFeeDecreaseMarketOrder;
         minExecutionFeeIncreaseMarketOrder = _minExecutionFeeIncreaseMarketOrder;
         minExecutionFeeDecreaseMarketOrder = _minExecutionFeeDecreaseMarketOrder;
+        emit ValueChanged(4, oldValueVariableOne, _minExecutionFeeIncreaseMarketOrder);
+        emit ValueChanged(5, oldValueVariableTwo, _minExecutionFeeDecreaseMarketOrder);
     }
-    // TODO: M3 missing for threshold
-    // TODO: L1 missing events
+    //  M3 missing for threshold - NOTE: Business logic
+    //  L1 missing events
 
     function setMinExecutionFeeLimitOrder(
         uint256 _minExecutionFeeIncreaseLimitOrder,
         uint256 _minExecutionFeeDecreaseLimitOrder
     ) external onlyAdmin {
+        uint256 oldValueVariableOne = _minExecutionFeeIncreaseLimitOrder;
+        uint256 oldValueVariableTwo = _minExecutionFeeDecreaseLimitOrder;
         minExecutionFeeIncreaseLimitOrder = _minExecutionFeeIncreaseLimitOrder;
         minExecutionFeeDecreaseLimitOrder = _minExecutionFeeDecreaseLimitOrder;
+        emit ValueChanged(6, oldValueVariableOne, _minExecutionFeeIncreaseLimitOrder);
+        emit ValueChanged(7, oldValueVariableTwo, _minExecutionFeeDecreaseLimitOrder);
     }
-    // TODO: M3 missing for threshold
 
-    function setPriceFeed(address _priceFeed) external override onlyAdmin {
+    function setPriceFeed(address _priceFeed) external override onlyAdmin isContract(_priceFeed) {
+        address oldValue = pricefeed;
         pricefeed = _priceFeed;
+        emit AddressChanged(8, oldValue, _priceFeed); // 8 for pricefeed
     }
-    // TODO: M3 missing for threshold
+    //  M3 missing for threshold - NOTE: Business logic
 
     function setDelayValues(uint256 _minBlockDelayKeeper, uint256 _minTimeDelayPublic, uint256 _maxTimeDelay)
         external
