@@ -227,30 +227,15 @@ contract Timelock is ITimelock {
         IVault vault = IVault(_vault);
         require(vault.whitelistedTokens(_token), "Timelock: token not yet whitelisted");
 
-        uint256 oldTokenDecimals = vault.tokenDecimals(_token);
-        bool oldIsStable = vault.stableTokens(_token);
-        bool oldCanBeCollateralToken = vault.canBeCollateralToken(_token);
-        bool oldCanBeIndexToken = vault.canBeIndexToken(_token);
+        uint256 tokenDecimals = vault.tokenDecimals(_token);
+        bool isStable = vault.stableTokens(_token);
+        bool canBeCollateralToken = vault.canBeCollateralToken(_token);
+        bool canBeIndexToken = vault.canBeIndexToken(_token);
         uint256 oldMaxLeverage = IVault(_vault).maxLeverage(_token);
         uint256 oldMinProfitBasisPoints = IVault(_vault).minProfitBasisPoints(_token);
 
-        /* (
-            uint256 oldTokenDecimals,
-            uint256 oldMinProfitBps,
-            bool oldIsStable,
-            bool oldCanBeCollateralToken,
-            bool oldCanBeIndexToken,
-            uint256 oldMaxLeverage
-        ) = vault.tokenConfig(_token); */
-
         IVault(_vault).setTokenConfig(
-            _token,
-            oldTokenDecimals,
-            _minProfitBps,
-            oldIsStable,
-            oldCanBeCollateralToken,
-            oldCanBeIndexToken,
-            _maxLeverage
+            _token, tokenDecimals, _minProfitBps, isStable, canBeCollateralToken, canBeIndexToken, _maxLeverage
         );
 
         emit ValueChanged(
