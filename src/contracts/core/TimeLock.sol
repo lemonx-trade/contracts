@@ -57,9 +57,9 @@ contract Timelock is ITimelock {
         uint256 maxOiImbalance
     );
     event ClearAction(bytes32 action);
-    event AddressChanged(uint256 configCode, address oldAddress, address newAddress);
-    event ValueChanged(uint256 configCode, uint256 oldValue, uint256 newValue);
-    event MapValueChanged(uint256 configCode, bytes32 encodedKey, bytes32 encodedValue);
+    event AddressChanged(bytes indexed funcSignature, address oldAddress, address newAddress);
+    event ValueChanged(bytes indexed funcSignature, uint256 oldValue, uint256 newValue);
+    event MapValueChanged(bytes indexed funcSignature, bytes32 encodedKey, bytes32 encodedValue);
 
     modifier onlyAdmin() {
         require(msg.sender == admin, "Timelock: admin forbidden");
@@ -106,7 +106,7 @@ contract Timelock is ITimelock {
     function setAdmin(address _admin) external override onlyAdmin validAddress(_admin) {
         address oldAddress = admin;
         admin = _admin;
-        emit AddressChanged(1, oldAddress, _admin); // 1 for admin
+        emit AddressChanged(abi.encodeWithSignature("setAdmin(address)"), oldAddress, _admin);
     }
     //  L4 zero or dead address check
 
@@ -120,7 +120,11 @@ contract Timelock is ITimelock {
     function setContractHandler(address _handler, bool _isActive) external onlyAdmin validAddress(_handler) {
         bool oldValue = isHandler[_handler];
         isHandler[_handler] = _isActive;
-        emit MapValueChanged(1, bytes32(abi.encodePacked(oldValue)), bytes32(abi.encodePacked(_isActive))); // 3 for contract handler
+        emit MapValueChanged(
+            abi.encodeWithSignature("setContractHandler(address,bool)"),
+            bytes32(abi.encodePacked(oldValue)),
+            bytes32(abi.encodePacked(_isActive))
+        );
     }
     //  L1 missing events
     //  L4 zero or dead address check
@@ -128,7 +132,11 @@ contract Timelock is ITimelock {
     function setKeeper(address _keeper, bool _isActive) external onlyAdmin validAddress(_keeper) {
         bool oldValue = isKeeper[_keeper];
         isKeeper[_keeper] = _isActive;
-        emit MapValueChanged(2, bytes32(abi.encodePacked(oldValue)), bytes32(abi.encodePacked(_isActive))); // 1 for keeper
+        emit MapValueChanged(
+            abi.encodeWithSignature("setKeeper(address,bool)"),
+            bytes32(abi.encodePacked(oldValue)),
+            bytes32(abi.encodePacked(_isActive))
+        );
     }
     //  L1 missing events
 
@@ -137,14 +145,18 @@ contract Timelock is ITimelock {
         require(_buffer > buffer, "Timelock: buffer cannot be decreased");
         uint256 oldValue = buffer;
         buffer = _buffer;
-        emit ValueChanged(1, oldValue, _buffer); //1 for buffer
+        emit ValueChanged(abi.encodeWithSignature("setBuffer(uint256)"), oldValue, _buffer);
     }
     //  L1 missing events
 
     function setMaxLeverage(address _vault, uint256 _maxLeverage, address _token) external onlyAdmin {
         require(_maxLeverage > MAX_LEVERAGE_VALIDATION, "Timelock: invalid _maxLeverage");
         IVault(_vault).setMaxLeverage(_maxLeverage, _token);
-        emit MapValueChanged(3, bytes32(abi.encodePacked(_token)), bytes32(abi.encodePacked(_maxLeverage))); // 3 for max leverage
+        emit MapValueChanged(
+            abi.encodeWithSignature("setMaxLeverage(address,uint256,address)"),
+            bytes32(abi.encodePacked(_token)),
+            bytes32(abi.encodePacked(_maxLeverage))
+        );
     }
     //  L1 missing events
 
@@ -159,9 +171,21 @@ contract Timelock is ITimelock {
         (uint256 oldBorrowingInterval, uint256 oldBorrowingRateFactor, uint256 oldBorrowingExponent) =
             IVault(_vault).borrowingRateFactor(token);
         IVault(_vault).setBorrowingRate(token, _borrowingInterval, _borrowingRateFactor, _borrowingExponent);
-        emit ValueChanged(2, oldBorrowingInterval, _borrowingInterval); // 2 for borrowing interval
-        emit ValueChanged(3, oldBorrowingRateFactor, _borrowingRateFactor); // 3 for borrowing rate factor
-        emit ValueChanged(4, oldBorrowingExponent, _borrowingExponent); // 4 for borrowing exponent
+        emit ValueChanged(
+            abi.encodeWithSignature("setBorrowingRate1(address,address,uint256,uint256,uint256)"),
+            oldBorrowingInterval,
+            _borrowingInterval
+        );
+        emit ValueChanged(
+            abi.encodeWithSignature("setBorrowingRate2(address,address,uint256,uint256,uint256)"),
+            oldBorrowingRateFactor,
+            _borrowingRateFactor
+        );
+        emit ValueChanged(
+            abi.encodeWithSignature("setBorrowingRate3(address,address,uint256,uint256,uint256)"),
+            oldBorrowingExponent,
+            _borrowingExponent
+        );
     }
     //  L1 missing events
 
@@ -176,9 +200,21 @@ contract Timelock is ITimelock {
         (uint256 oldFundingInterval, uint256 oldFundingRateFactor, uint256 oldFundingExponent) =
             IVault(_vault).fundingRateFactor(token);
         IVault(_vault).setFundingRate(token, _fundingInterval, _fundingRateFactor, _fundingExponent);
-        emit ValueChanged(5, oldFundingInterval, _fundingInterval); // 5 for funding interval
-        emit ValueChanged(6, oldFundingRateFactor, _fundingRateFactor); // 6 for funding rate factor
-        emit ValueChanged(7, oldFundingExponent, _fundingExponent); // 7 for funding exponent
+        emit ValueChanged(
+            abi.encodeWithSignature("setFundingRate1(address,address,uint256,uint256,uint256)"),
+            oldFundingInterval,
+            _fundingInterval
+        );
+        emit ValueChanged(
+            abi.encodeWithSignature("setFundingRate2(address,address,uint256,uint256,uint256)"),
+            oldFundingRateFactor,
+            _fundingRateFactor
+        );
+        emit ValueChanged(
+            abi.encodeWithSignature("setFundingRate3(address,address,uint256,uint256,uint256)"),
+            oldFundingExponent,
+            _fundingExponent
+        );
     }
     //  L1 missing events
 
@@ -217,8 +253,14 @@ contract Timelock is ITimelock {
             _maxLeverage
         );
 
-        emit ValueChanged(8, oldMinProfitBasisPoints, _minProfitBps); // 8 for min profit bps
-        emit ValueChanged(9, oldMaxLeverage, _maxLeverage); // 9 for max leverage
+        emit ValueChanged(
+            abi.encodeWithSignature("setTokenConfig1(address,address,uint256,uint256)"),
+            oldMinProfitBasisPoints,
+            _minProfitBps
+        );
+        emit ValueChanged(
+            abi.encodeWithSignature("setTokenConfig2(address,address,uint256,uint256)"), oldMaxLeverage, _maxLeverage
+        );
     }
 
     function updateUsdlSupply(uint256 usdlAmount) external onlyKeeperAndAbove {
@@ -246,26 +288,38 @@ contract Timelock is ITimelock {
 
     function setMaxGlobalLongSize(address _vault, address _token, uint256 _amount) external onlyAdmin {
         IVault(_vault).setMaxGlobalLongSize(_token, _amount);
-        emit MapValueChanged(4, bytes32(abi.encodePacked(_token)), bytes32(abi.encodePacked(_amount)));
+        emit MapValueChanged(
+            abi.encodeWithSignature("setMaxGlobalLongSize(address,address,uint256)"),
+            bytes32(abi.encodePacked(_token)),
+            bytes32(abi.encodePacked(_amount))
+        );
     }
     //  L1 missing events
 
     function setMaxGlobalShortSize(address _vault, address _token, uint256 _amount) external onlyAdmin {
         IVault(_vault).setMaxGlobalShortSize(_token, _amount);
-        emit MapValueChanged(5, bytes32(abi.encodePacked(_token)), bytes32(bytes32(abi.encodePacked(_amount))));
+        emit MapValueChanged(
+            abi.encodeWithSignature("setMaxGlobalShortSize(address,address,uint256)"),
+            bytes32(abi.encodePacked(_token)),
+            bytes32(bytes32(abi.encodePacked(_amount)))
+        );
     }
     //  L1 missing events
 
     function removeAdmin(address _token, address _account) external onlyAdmin validAddress(_account) {
         IYieldToken(_token).removeAdmin(_account);
-        emit MapValueChanged(6, bytes32(abi.encodePacked(_account)), bytes32(abi.encodePacked(false)));
+        emit MapValueChanged(
+            abi.encodeWithSignature("removeAdmin(address,address)"),
+            bytes32(abi.encodePacked(_account)),
+            bytes32(abi.encodePacked(false))
+        );
     }
     //  L1 missing events
 
     function setUtils(address _vault, IUtils _utils) external onlyAdmin {
         address oldAddress = address(IVault(_vault).getUtilsAddress());
         IVault(_vault).setUtils(address(_utils));
-        emit AddressChanged(2, oldAddress, address(_utils));
+        emit AddressChanged(abi.encodeWithSignature("setUtils(address,IUtils)"), oldAddress, address(_utils));
     }
     //  L1 missing events
     //  L4 zero or dead address check
@@ -274,7 +328,7 @@ contract Timelock is ITimelock {
         require(_maxGasPrice > 5000000000, "Invalid _maxGasPrice");
         uint256 oldValue = IVault(_vault).maxGasPrice();
         IVault(_vault).setMaxGasPrice(_maxGasPrice);
-        emit ValueChanged(10, oldValue, _maxGasPrice);
+        emit ValueChanged(abi.encodeWithSignature("setMaxGasPrice(address,uint256)"), oldValue, _maxGasPrice);
     }
 
     function withdrawFees(address _vault, address _token, address _receiver) external onlyAdmin {

@@ -27,8 +27,8 @@ contract YieldToken is IERC20, IYieldToken {
     bool public inWhitelistMode;
     mapping(address => bool) public whitelistedHandlers;
 
-    event AddressChanged(uint256 configCode, address oldAddress, address newAddress);
-    event ValueChanged(uint256 configCode, uint256 oldValue, uint256 newValue);
+    event AddressChanged(bytes indexed funcSignature, address oldAddress, address newAddress);
+    event ValueChanged(bytes indexed funcSignature, uint256 oldValue, uint256 newValue);
 
     modifier onlyGov() {
         require(msg.sender == gov, "YieldToken: forbidden");
@@ -59,7 +59,7 @@ contract YieldToken is IERC20, IYieldToken {
     function setGov(address _gov) external onlyGov validAddress(_gov) {
         address oldAddress = gov;
         gov = _gov;
-        emit AddressChanged(1, oldAddress, _gov); // 1 for gov
+        emit AddressChanged(abi.encodeWithSignature("setGov(address)"), oldAddress, _gov);
     }
     //  L1 missing events
 
@@ -68,21 +68,29 @@ contract YieldToken is IERC20, IYieldToken {
         string memory oldSymbol = symbol;
         name = _name;
         symbol = _symbol;
-        emit ValueChanged(2, uint256(bytes32(abi.encodePacked(oldName))), uint256(bytes32(abi.encodePacked(_name)))); // 2 for name
-        emit ValueChanged(3, uint256(bytes32(abi.encodePacked(oldSymbol))), uint256(bytes32(abi.encodePacked(_symbol)))); // 3 for symbol
+        emit ValueChanged(
+            abi.encodeWithSignature("setInfo1(address,string)"),
+            uint256(bytes32(abi.encodePacked(oldName))),
+            uint256(bytes32(abi.encodePacked(_name)))
+        );
+        emit ValueChanged(
+            abi.encodeWithSignature("setInfo2(address,string)"),
+            uint256(bytes32(abi.encodePacked(oldSymbol))),
+            uint256(bytes32(abi.encodePacked(_symbol)))
+        );
     }
     //  L1 missing events
     //  L4 zero or dead address check
 
     function addAdmin(address _account) external onlyGov validAddress(_account) {
         admins[_account] = true;
-        emit AddressChanged(2, address(0), _account); // 2 for addAdmin
+        emit AddressChanged(abi.encodeWithSignature("addAdmin(address)"), address(0), _account);
     }
     //  L4 zero or dead address check
 
     function removeAdmin(address _account) external override onlyGov validAddress(_account) {
         admins[_account] = false;
-        emit AddressChanged(3, _account, address(0)); // 3 for removeAdmin
+        emit AddressChanged(abi.encodeWithSignature("removeAdmin(address)"), _account, address(0));
     }
 
     // to help users who accidentally send their tokens to this contract
@@ -93,21 +101,25 @@ contract YieldToken is IERC20, IYieldToken {
         validAddress(_account)
     {
         IERC20(_token).safeTransfer(_account, _amount);
-        emit AddressChanged(4, _token, _account); // 4 for withdrawToken
+        emit AddressChanged(abi.encodeWithSignature("withdrawToken(address,address,uint256)"), _token, _account);
     }
     //  L1 missing events
 
     function setInWhitelistMode(bool _inWhitelistMode) external onlyGov {
         bool oldValue = inWhitelistMode;
         inWhitelistMode = _inWhitelistMode;
-        emit ValueChanged(4, oldValue ? 1 : 0, _inWhitelistMode ? 1 : 0); // 7 for inWhitelistMode
+        emit ValueChanged(
+            abi.encodeWithSignature("setInWhitelistMode(bool)"), oldValue ? 1 : 0, _inWhitelistMode ? 1 : 0
+        );
     }
     //  L1 missing events
 
     function setWhitelistedHandler(address _handler, bool _isWhitelisted) external onlyGov validAddress(_handler) {
         bool oldValue = whitelistedHandlers[_handler];
         whitelistedHandlers[_handler] = _isWhitelisted;
-        emit ValueChanged(5, oldValue ? 1 : 0, _isWhitelisted ? 1 : 0); // 5 for whitelistedHandlers
+        emit ValueChanged(
+            abi.encodeWithSignature("setWhitelistedHandler(address,bool)"), oldValue ? 1 : 0, _isWhitelisted ? 1 : 0
+        );
     }
     //  L1 missing events
 
@@ -115,8 +127,12 @@ contract YieldToken is IERC20, IYieldToken {
         require(!nonStakingAccounts[_account], "YieldToken: _account already marked");
         nonStakingAccounts[_account] = true;
         nonStakingSupply = nonStakingSupply + (balances[_account]);
-        emit AddressChanged(5, address(0), _account); // 5 for addNonStakingAccount
-        emit ValueChanged(6, nonStakingSupply - balances[_account], nonStakingSupply); // 6 for nonStakingSupply
+        emit AddressChanged(abi.encodeWithSignature("addNonStakingAccount(address)"), address(0), _account);
+        emit ValueChanged(
+            abi.encodeWithSignature("addNonStakingAccount(address)"),
+            nonStakingSupply - balances[_account],
+            nonStakingSupply
+        );
     }
     //  L1 missing events
 
@@ -124,8 +140,12 @@ contract YieldToken is IERC20, IYieldToken {
         require(nonStakingAccounts[_account], "YieldToken: _account not marked");
         nonStakingAccounts[_account] = false;
         nonStakingSupply = nonStakingSupply - (balances[_account]);
-        emit AddressChanged(6, _account, address(0)); // 6 for removeNonStakingAccount
-        emit ValueChanged(7, nonStakingSupply + balances[_account], nonStakingSupply); // 7 for nonStakingSupply
+        emit AddressChanged(abi.encodeWithSignature("removeNonStakingAccount(address)"), _account, address(0));
+        emit ValueChanged(
+            abi.encodeWithSignature("removeNonStakingAccount(address)"),
+            nonStakingSupply + balances[_account],
+            nonStakingSupply
+        );
     }
 
     function totalStaked() external view override returns (uint256) {

@@ -232,8 +232,12 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
         uint256 oldValueVariableTwo = _limitOrder;
         minPurchaseUSDAmountMarketOrder = _marketOrder;
         minPurchaseUSDAmountLimitOrder = _limitOrder;
-        emit ValueChanged(1, oldValueVariableOne, _marketOrder);
-        emit ValueChanged(2, oldValueVariableTwo, _limitOrder);
+        emit ValueChanged(
+            abi.encodeWithSignature("setMinPurchaseAmount1(uint256,uint256)"), oldValueVariableOne, _marketOrder
+        );
+        emit ValueChanged(
+            abi.encodeWithSignature("setMinPurchaseAmount2(uint256,uint256)"), oldValueVariableTwo, _limitOrder
+        );
     }
 
     function setPositionKeeper(address _account, bool _isActive) external onlyAdmin {
@@ -247,7 +251,7 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
         require(_maxProfitMultiplier >= 1, "mpm");
         uint256 oldValue = maxProfitMultiplier;
         maxProfitMultiplier = _maxProfitMultiplier;
-        emit ValueChanged(3, oldValue, _maxProfitMultiplier); // 2 for utils
+        emit ValueChanged(abi.encodeWithSignature("setMaxTPMultiplier(uint256)"), oldValue, _maxProfitMultiplier); // 2 for utils
     }
     //  M3 missing for threshold - NOTE: Business logic
     //  L1 missing events
@@ -260,8 +264,16 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
         uint256 oldValueVariableTwo = _minExecutionFeeDecreaseMarketOrder;
         minExecutionFeeIncreaseMarketOrder = _minExecutionFeeIncreaseMarketOrder;
         minExecutionFeeDecreaseMarketOrder = _minExecutionFeeDecreaseMarketOrder;
-        emit ValueChanged(4, oldValueVariableOne, _minExecutionFeeIncreaseMarketOrder);
-        emit ValueChanged(5, oldValueVariableTwo, _minExecutionFeeDecreaseMarketOrder);
+        emit ValueChanged(
+            abi.encodeWithSignature("setMinExecutionFeeMarketOrder1(uint256,uint256)"),
+            oldValueVariableOne,
+            _minExecutionFeeIncreaseMarketOrder
+        );
+        emit ValueChanged(
+            abi.encodeWithSignature("setMinExecutionFeeMarketOrder2(uint256,uint256)"),
+            oldValueVariableTwo,
+            _minExecutionFeeDecreaseMarketOrder
+        );
     }
     //  M3 missing for threshold - NOTE: Business logic
     //  L1 missing events
@@ -274,14 +286,22 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
         uint256 oldValueVariableTwo = _minExecutionFeeDecreaseLimitOrder;
         minExecutionFeeIncreaseLimitOrder = _minExecutionFeeIncreaseLimitOrder;
         minExecutionFeeDecreaseLimitOrder = _minExecutionFeeDecreaseLimitOrder;
-        emit ValueChanged(6, oldValueVariableOne, _minExecutionFeeIncreaseLimitOrder);
-        emit ValueChanged(7, oldValueVariableTwo, _minExecutionFeeDecreaseLimitOrder);
+        emit ValueChanged(
+            abi.encodeWithSignature("setMinExecutionFeeLimitOrder1(uint256,uint256)"),
+            oldValueVariableOne,
+            _minExecutionFeeIncreaseLimitOrder
+        );
+        emit ValueChanged(
+            abi.encodeWithSignature("setMinExecutionFeeLimitOrder2(uint256,uint256)"),
+            oldValueVariableTwo,
+            _minExecutionFeeDecreaseLimitOrder
+        );
     }
 
     function setPriceFeed(address _priceFeed) external override onlyAdmin isContract(_priceFeed) {
         address oldValue = pricefeed;
         pricefeed = _priceFeed;
-        emit AddressChanged(8, oldValue, _priceFeed); // 8 for pricefeed
+        emit AddressChanged(abi.encodeWithSignature("setPriceFeed(address)"), oldValue, _priceFeed); // 8 for pricefeed
     }
     //  M3 missing for threshold - NOTE: Business logic
 

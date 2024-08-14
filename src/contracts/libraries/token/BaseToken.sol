@@ -27,8 +27,8 @@ contract BaseToken is IERC20, IBaseToken {
     bool public inPrivateTransferMode;
     mapping(address => bool) public isHandler;
 
-    event AddressChanged(uint256 configCode, address oldAddress, address newAddress);
-    event ValueChanged(uint256 configCode, uint256 oldValue, uint256 newValue);
+    event AddressChanged(bytes indexed funcSignature, address oldAddress, address newAddress);
+    event ValueChanged(bytes indexed funcSignature, uint256 oldValue, uint256 newValue);
 
     modifier onlyGov() {
         require(msg.sender == gov, "BaseToken: forbidden");
@@ -58,7 +58,7 @@ contract BaseToken is IERC20, IBaseToken {
     function setGov(address _gov) external onlyGov validAddress(_gov) {
         address oldAddress = gov;
         gov = _gov;
-        emit AddressChanged(1, oldAddress, _gov); // 1 for gov
+        emit AddressChanged(abi.encodeWithSignature("setGov(address)"), oldAddress, _gov);
     }
     //  L1 missing events
 
@@ -67,35 +67,49 @@ contract BaseToken is IERC20, IBaseToken {
         string memory oldSymbol = symbol;
         name = _name;
         symbol = _symbol;
-        emit ValueChanged(2, uint256(bytes32(abi.encodePacked(oldName))), uint256(bytes32(abi.encodePacked(_name)))); // 2 for name
-        emit ValueChanged(3, uint256(bytes32(abi.encodePacked(oldSymbol))), uint256(bytes32(abi.encodePacked(_symbol)))); // 3 for symbol
+        emit ValueChanged(
+            abi.encodeWithSignature("setInfo1(string,string)"),
+            uint256(bytes32(abi.encodePacked(oldName))),
+            uint256(bytes32(abi.encodePacked(_name)))
+        );
+        emit ValueChanged(
+            abi.encodeWithSignature("setInfo2(string,string)"),
+            uint256(bytes32(abi.encodePacked(oldSymbol))),
+            uint256(bytes32(abi.encodePacked(_symbol)))
+        );
     }
     //  L1 missing events
     //  L4 zero or dead address check
 
     function addAdmin(address _account) external onlyGov validAddress(_account) {
         admins[_account] = true;
-        emit AddressChanged(2, address(0), _account); // 2 for addAdmin
+        emit AddressChanged(abi.encodeWithSignature("addAdmin(address)"), address(0), _account);
     }
     //  L1 missing events
     //  L4 zero or dead address check
 
     function removeAdmin(address _account) external override onlyGov validAddress(_account) {
         admins[_account] = false;
-        emit AddressChanged(3, _account, address(0)); // 3 for removeAdmin
+        emit AddressChanged(abi.encodeWithSignature("removeAdmin(address)"), _account, address(0));
     }
 
     // to help users who accidentally send their tokens to this contract
     function withdrawToken(address _token, address _account, uint256 _amount) external override onlyGov {
         IERC20(_token).safeTransfer(_account, _amount);
-        emit ValueChanged(4, uint256(bytes32(abi.encodePacked(_token, _account))), _amount); // 4 for withdrawToken
+        emit ValueChanged(
+            abi.encodeWithSignature("withdrawToken(address,address,uint256)"),
+            uint256(bytes32(abi.encodePacked(_token, _account))),
+            _amount
+        );
     }
     //  L1 missing events
 
     function setInPrivateTransferMode(bool _inPrivateTransferMode) external override onlyGov {
         bool oldValue = inPrivateTransferMode;
         inPrivateTransferMode = _inPrivateTransferMode;
-        emit ValueChanged(5, oldValue ? 1 : 0, _inPrivateTransferMode ? 1 : 0); // 5 for inPrivateTransferMode
+        emit ValueChanged(
+            abi.encodeWithSignature("setInPrivateTransferMode(bool)"), oldValue ? 1 : 0, _inPrivateTransferMode ? 1 : 0
+        );
     }
     //  L1 missing events
     //  L4 zero or dead address check
@@ -103,7 +117,7 @@ contract BaseToken is IERC20, IBaseToken {
     function setHandler(address _handler, bool _isActive) external onlyGov validAddress(_handler) {
         bool oldValue = isHandler[_handler];
         isHandler[_handler] = _isActive;
-        emit ValueChanged(6, oldValue ? 1 : 0, _isActive ? 1 : 0); // 8 for setHandler
+        emit ValueChanged(abi.encodeWithSignature("setHandler(address,bool)"), oldValue ? 1 : 0, _isActive ? 1 : 0);
     }
 
     function totalStaked() external view override returns (uint256) {

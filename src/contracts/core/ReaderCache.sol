@@ -16,8 +16,8 @@ contract ReaderCache is Governable {
     ILLP public llp;
     ILLP public fLLP;
 
-    event AddressChanged(uint256 configCode, address oldAddress, address newAddress);
-    event ValueChanged(uint256 configCode, uint256 oldValue, uint256 newValue);
+    event AddressChanged(bytes indexed funcSignature, address oldAddress, address newAddress);
+    event ValueChanged(bytes indexed funcSignature, uint256 oldValue, uint256 newValue);
 
     modifier isContract(address account) {
         require(account != address(0), "ZERO");
@@ -43,7 +43,7 @@ contract ReaderCache is Governable {
     function setVault(address _vault) external onlyGov isContract(_vault) {
         address oldAddress = address(vault);
         vault = IVault(_vault);
-        emit AddressChanged(1, oldAddress, _vault);
+        emit AddressChanged(abi.encodeWithSignature("setVault(address)"), oldAddress, _vault);
     }
     //  M2 check for isContract
     //  L1 missing events
@@ -51,7 +51,7 @@ contract ReaderCache is Governable {
     function setUtils(address _utils) external onlyGov isContract(_utils) {
         address oldAddress = address(utils);
         utils = IUtils(_utils);
-        emit AddressChanged(2, oldAddress, _utils);
+        emit AddressChanged(abi.encodeWithSignature("setUtils(address)"), oldAddress, _utils);
     }
     //  M2 check for isContract
     //  L1 missing events
@@ -59,7 +59,7 @@ contract ReaderCache is Governable {
     function setReaderContract(address _readerContract) external onlyGov isContract(_readerContract) {
         address oldAddress = address(readerContract);
         readerContract = IReaderContract(_readerContract);
-        emit AddressChanged(3, oldAddress, _readerContract);
+        emit AddressChanged(abi.encodeWithSignature("setReaderContract(address)"), oldAddress, _readerContract);
     }
     //  M2 check for isContract
     //  L1 missing events
@@ -67,7 +67,7 @@ contract ReaderCache is Governable {
     function setLLP(address _llp) external onlyGov isContract(_llp) {
         address oldAddress = address(llp);
         llp = ILLP(_llp);
-        emit AddressChanged(4, oldAddress, _llp);
+        emit AddressChanged(abi.encodeWithSignature("setLLP(address)"), oldAddress, _llp);
     }
     //  M2 check for isContract
     //  L1 missing events
@@ -75,7 +75,7 @@ contract ReaderCache is Governable {
     function setFLLP(address _fLLP) external onlyGov isContract(_fLLP) {
         address oldAddress = address(fLLP);
         fLLP = ILLP(_fLLP);
-        emit AddressChanged(5, oldAddress, _fLLP);
+        emit AddressChanged(abi.encodeWithSignature("setFLLP(address)"), oldAddress, _fLLP);
     }
 
     function getLiquidatorCache(

@@ -44,9 +44,9 @@ contract PythPriceFeed is IPriceFeed, Governable {
     event NoDarkOraclePrice(address token, uint256 time);
     event PythPricesDelayed(address token, uint256 currentTime, uint256 priceTime);
 
-    event AddressChanged(uint256 configCode, address oldAddress, address newAddress);
-    event ValueChanged(uint256 configCode, uint256 oldValue, uint256 newValue);
-    event MapValueChanged(uint256 configCode, bytes32 encodedKey, bytes32 encodedValue);
+    event AddressChanged(bytes indexed funcSignature, address oldAddress, address newAddress);
+    event ValueChanged(bytes indexed funcSignature, uint256 oldValue, uint256 newValue);
+    event MapValueChanged(bytes indexed funcSignature, bytes32 encodedKey, bytes32 encodedValue);
 
     modifier isContract(address account) {
         require(account != address(0), "ZERO");
@@ -76,7 +76,7 @@ contract PythPriceFeed is IPriceFeed, Governable {
     function setOrderManager(address _orderManager) external onlyGov isContract(_orderManager) {
         address oldAddress = address(orderManager);
         orderManager = IOrderManager(_orderManager);
-        emit AddressChanged(1, oldAddress, _orderManager); // 1 for orderManager
+        emit AddressChanged(abi.encodeWithSignature("setOrderManager(address)"), oldAddress, _orderManager); // 1 for orderManager
     }
     //  M2 check for isContract
     //  L1 missing events
@@ -84,17 +84,25 @@ contract PythPriceFeed is IPriceFeed, Governable {
     function setRewardRouter(address _rewardRouter) external onlyGov isContract(_rewardRouter) {
         address oldAddress = address(rewardRouter);
         rewardRouter = IRewardRouter(_rewardRouter);
-        emit AddressChanged(2, oldAddress, _rewardRouter); // 2 for rewardRouter
+        emit AddressChanged(abi.encodeWithSignature("setRewardRouter(address)"), oldAddress, _rewardRouter); // 2 for rewardRouter
     }
 
     function setUpdater(address _updater) external onlyGov {
         updater[_updater] = true;
-        emit MapValueChanged(1, bytes32(abi.encodePacked(_updater)), bytes32(abi.encodePacked(true))); // 1 for updater
+        emit MapValueChanged(
+            abi.encodeWithSignature("setUpdater(address)"),
+            bytes32(abi.encodePacked(_updater)),
+            bytes32(abi.encodePacked(true))
+        );
     }
 
     function removeUpdater(address _updater) external onlyGov {
         updater[_updater] = false;
-        emit MapValueChanged(2, bytes32(abi.encodePacked(_updater)), bytes32(abi.encodePacked(false))); // 2 for updater
+        emit MapValueChanged(
+            abi.encodeWithSignature("removeUpdater(address)"),
+            bytes32(abi.encodePacked(_updater)),
+            bytes32(abi.encodePacked(false))
+        );
     }
     // M2 check for isContract
     //  L1 missing events
@@ -102,21 +110,21 @@ contract PythPriceFeed is IPriceFeed, Governable {
     function setPythContract(address _pythContract) external onlyGov isContract(_pythContract) {
         address oldAddress = pythContract;
         pythContract = _pythContract;
-        emit AddressChanged(3, oldAddress, _pythContract); // 3 for pythContract
+        emit AddressChanged(abi.encodeWithSignature("setPythContract(address)"), oldAddress, _pythContract);
     }
     //  L1 missing events
 
     function setMaxAllowedDelay(uint256 _maxAllowedDelay) external onlyGov {
         uint256 oldValue = maxAllowedDelay;
         maxAllowedDelay = _maxAllowedDelay;
-        emit ValueChanged(1, oldValue, _maxAllowedDelay); // 1 for maxAllowedDelay
+        emit ValueChanged(abi.encodeWithSignature("setMaxAllowedDelay(uint256)"), oldValue, _maxAllowedDelay);
     }
     //  L1 missing events
 
     function setMaxAllowedDelta(uint256 _maxAllowedDelta) external onlyGov {
         uint256 oldValue = maxAllowedDelta;
         maxAllowedDelta = _maxAllowedDelta;
-        emit ValueChanged(2, oldValue, _maxAllowedDelta); // 2 for maxAllowedDelta
+        emit ValueChanged(abi.encodeWithSignature("setMaxAllowedDelta(uint256)"), oldValue, _maxAllowedDelta);
     }
 
     function updateTokenIdMapping(address _token, bytes32 _priceId) external onlyGov {

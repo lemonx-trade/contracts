@@ -42,8 +42,8 @@ contract RewardRouter is IRewardRouter, ReentrancyGuard, Governable {
     event Mintllp(address indexed account, uint256 amount);
     event Burnllp(address indexed account, uint256 amount);
 
-    event AddressChanged(uint256 configCode, address oldAddress, address newAddress);
-    event ValueChanged(uint256 configCode, uint256 oldValue, uint256 newValue);
+    event AddressChanged(bytes indexed funcSignature, address oldAddress, address newAddress);
+    event ValueChanged(bytes indexed funcSignature, uint256 oldValue, uint256 newValue);
 
     function initialize(address _llp, address _llpManager, address _feeLlpTracker) external onlyGov {
         require(!isInitialized, "RewardRouter: already initialized");
@@ -80,7 +80,7 @@ contract RewardRouter is IRewardRouter, ReentrancyGuard, Governable {
     function setFeeLlpTracker(address _feeLlpTracker) external onlyGov isContract(_feeLlpTracker) {
         address oldAddress = feeLlpTracker;
         feeLlpTracker = _feeLlpTracker;
-        emit AddressChanged(1, oldAddress, _feeLlpTracker); // 1 for feeLlpTracker
+        emit AddressChanged(abi.encodeWithSignature("setFeeLlpTracker(address)"), oldAddress, _feeLlpTracker);
     }
     //  M2 check for isContract
     //  L1 missing events
@@ -88,7 +88,7 @@ contract RewardRouter is IRewardRouter, ReentrancyGuard, Governable {
     function setLlpManager(address _llpManager) external onlyGov isContract(_llpManager) {
         address oldAddress = llpManager;
         llpManager = _llpManager;
-        emit AddressChanged(2, oldAddress, _llpManager); // 2 for llpManager
+        emit AddressChanged(abi.encodeWithSignature("setLlpManager(address)"), oldAddress, _llpManager);
     }
     //  M2 check for isContract
     //  L1 missing events
@@ -96,7 +96,7 @@ contract RewardRouter is IRewardRouter, ReentrancyGuard, Governable {
     function setLlp(address _llp) external onlyGov isContract(_llp) {
         address oldAddress = llp;
         llp = _llp;
-        emit AddressChanged(3, oldAddress, _llp); // 3 for llp
+        emit AddressChanged(abi.encodeWithSignature("setLlp(address)"), oldAddress, _llp);
     }
     // TODO: M1 ensure less than 25% update
     //  M3 missing for threshold - NOTE: Business logic

@@ -26,9 +26,9 @@ contract ReaderContract is Governable {
     int256 public fundingFactorForHighOISide = 1250;
     uint256 constant POSITION_FEE_SCALING_FACTOR = 1000000;
 
-    event AddressChanged(uint256 configCode, address oldAddress, address newAddress);
-    event ValueChanged(uint256 configCode, uint256 oldValue, uint256 newValue);
-    event ValueChangedInt(uint256 configCode, int256 oldValue, int256 newValue);
+    event AddressChanged(bytes indexed funcSignature, address oldAddress, address newAddress);
+    event ValueChanged(bytes indexed funcSignature, uint256 oldValue, uint256 newValue);
+    event ValueChangedInt(bytes indexed funcSignature, int256 oldValue, int256 newValue);
 
     modifier isContract(address account) {
         require(account != address(0), "ZERO");
@@ -52,7 +52,7 @@ contract ReaderContract is Governable {
     function setTier1Size(uint256 _tier1Size) external onlyGov {
         uint256 oldValue = tier1Size;
         tier1Size = _tier1Size;
-        emit ValueChanged(1, oldValue, _tier1Size);
+        emit ValueChanged(abi.encodeWithSignature("setTier1Size(uint256)"), oldValue, _tier1Size);
     }
     //  M3 missing for threshold - NOTE: Business logic
     //  L1 missing events
@@ -60,7 +60,7 @@ contract ReaderContract is Governable {
     function setTier2Size(uint256 _tier2Size) external onlyGov {
         uint256 oldValue = tier2Size;
         tier2Size = _tier2Size;
-        emit ValueChanged(2, oldValue, _tier2Size);
+        emit ValueChanged(abi.encodeWithSignature("setTier2Size(uint256)"), oldValue, _tier2Size);
     }
     //  M3 missing for threshold - NOTE: Business logic
     //  L1 missing events
@@ -68,7 +68,7 @@ contract ReaderContract is Governable {
     function setTier3Size(uint256 _tier3Size) external onlyGov {
         uint256 oldValue = tier3Size;
         tier3Size = _tier3Size;
-        emit ValueChanged(3, oldValue, _tier3Size);
+        emit ValueChanged(abi.encodeWithSignature("setTier3Size(uint256)"), oldValue, _tier3Size);
     }
     //  M3 missing for threshold - NOTE: Business logic
     //  L1 missing events
@@ -76,7 +76,7 @@ contract ReaderContract is Governable {
     function setTier1Factor(uint256 _tier1Factor) external onlyGov {
         uint256 oldValue = tier1Factor;
         tier1Factor = _tier1Factor;
-        emit ValueChanged(4, oldValue, _tier1Factor);
+        emit ValueChanged(abi.encodeWithSignature("setTier1Factor(uint256)"), oldValue, _tier1Factor);
     }
     //  M3 missing for threshold - NOTE: Business logic
     //  L1 missing events
@@ -84,7 +84,7 @@ contract ReaderContract is Governable {
     function setTier2Factor(uint256 _tier2Factor) external onlyGov {
         uint256 oldValue = tier2Factor;
         tier2Factor = _tier2Factor;
-        emit ValueChanged(5, oldValue, _tier2Factor);
+        emit ValueChanged(abi.encodeWithSignature("setTier2Factor(uint256)"), oldValue, _tier2Factor);
     }
     //  M3 missing for threshold - NOTE: Business logic
     //  L1 missing events
@@ -92,7 +92,7 @@ contract ReaderContract is Governable {
     function setTier3Factor(uint256 _tier3Factor) external onlyGov {
         uint256 oldValue = tier3Factor;
         tier3Factor = _tier3Factor;
-        emit ValueChanged(6, oldValue, _tier3Factor);
+        emit ValueChanged(abi.encodeWithSignature("setTier3Factor(uint256)"), oldValue, _tier3Factor);
     }
     //  M3 missing for threshold - NOTE: Business logic
     //  L1 missing events
@@ -100,7 +100,9 @@ contract ReaderContract is Governable {
     function setTierBorrowingRateFactor(uint256 _tierBorrowingRateFactor) external onlyGov {
         uint256 oldValue = tierBorrowingRateFactor;
         tierBorrowingRateFactor = _tierBorrowingRateFactor;
-        emit ValueChanged(7, oldValue, _tierBorrowingRateFactor);
+        emit ValueChanged(
+            abi.encodeWithSignature("setTierBorrowingRateFactor(uint256)"), oldValue, _tierBorrowingRateFactor
+        );
     }
     //  M3 missing for threshold
     //  L1 missing events
@@ -110,7 +112,9 @@ contract ReaderContract is Governable {
         require(_fundingFactorForLessOISide < 1 * FUNDING_RATE_PRECISION, "pffloi");
         int256 oldValue = fundingFactorForLessOISide;
         fundingFactorForLessOISide = _fundingFactorForLessOISide;
-        emit ValueChangedInt(1, oldValue, _fundingFactorForLessOISide);
+        emit ValueChangedInt(
+            abi.encodeWithSignature("setFundingFactorForLessOISide(int256)"), oldValue, _fundingFactorForLessOISide
+        );
     }
     //  M3 missing for threshold
     //  L1 missing events
@@ -120,35 +124,39 @@ contract ReaderContract is Governable {
         require(_fundingFactorForHighOISide < 1 * FUNDING_RATE_PRECISION, "pffloi");
         int256 oldValue = fundingFactorForHighOISide;
         fundingFactorForHighOISide = _fundingFactorForHighOISide;
-        emit ValueChangedInt(2, oldValue, _fundingFactorForHighOISide);
+        emit ValueChangedInt(
+            abi.encodeWithSignature("setFundingFactorForHighOISide(int256)"), oldValue, _fundingFactorForHighOISide
+        );
     }
     //  L1 missing events
 
     function setTierBorrowingRateStartTime(uint256 _tierBorrowingRateStartTime) external onlyGov {
         uint256 oldValue = tierBorrowingRateStartTime;
         tierBorrowingRateStartTime = _tierBorrowingRateStartTime;
-        emit ValueChanged(8, oldValue, _tierBorrowingRateStartTime);
+        emit ValueChanged(
+            abi.encodeWithSignature("setTierBorrowingRateStartTime(uint256)"), oldValue, _tierBorrowingRateStartTime
+        );
     }
     // M2 check for isContract
 
     function setVault(address _vault) public onlyGov isContract(_vault) {
         address oldAddress = address(vault);
         vault = IVault(_vault);
-        emit AddressChanged(1, oldAddress, _vault);
+        emit AddressChanged(abi.encodeWithSignature("setVault(address)"), oldAddress, _vault);
     }
     //  M2 check for isContract
 
     function setUtils(address _utils) public onlyGov isContract(_utils) {
         address oldAddress = address(utils);
         utils = IUtils(_utils);
-        emit AddressChanged(2, oldAddress, _utils);
+        emit AddressChanged(abi.encodeWithSignature("setUtils(address)"), oldAddress, _utils);
     }
     //  M2 check for isContract
 
     function setUsdc(address _usdc) public onlyGov isContract(_usdc) {
         address oldAddress = address(usdc);
         usdc = IERC20(_usdc);
-        emit AddressChanged(3, oldAddress, _usdc);
+        emit AddressChanged(abi.encodeWithSignature("setUsdc(address)"), oldAddress, _usdc);
     }
 
     function getOI(uint256 price, address _token, bool _isLong) public view returns (uint256 finalOI) {

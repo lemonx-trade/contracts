@@ -45,8 +45,8 @@ contract RewardTracker is IERC20, ReentrancyGuard, IRewardTracker, Governable {
     event Stakellp(address indexed fundingAccount, address indexed receiver, uint256 amount);
     event Unstakellp(address indexed fundingAccount, address indexed receiver, uint256 amount);
 
-    event AddressChanged(uint256 configCode, address oldAddress, address newAddress);
-    event ValueChanged(uint256 configCode, uint256 oldValue, uint256 newValue);
+    event AddressChanged(bytes indexed funcSignature, address oldAddress, address newAddress);
+    event ValueChanged(bytes indexed funcSignature, uint256 oldValue, uint256 newValue);
 
     constructor(string memory _name, string memory _symbol) {
         name = _name;
@@ -97,7 +97,7 @@ contract RewardTracker is IERC20, ReentrancyGuard, IRewardTracker, Governable {
     function setRewardPrecision(uint256 _rewardPrecision) public onlyGov {
         uint256 oldValue = rewardPrecision;
         rewardPrecision = _rewardPrecision;
-        emit ValueChanged(1, oldValue, _rewardPrecision);
+        emit ValueChanged(abi.encodeWithSignature("setRewardPrecision(uint256)"), oldValue, _rewardPrecision);
     }
     //  L4 zero or dead address check
 
@@ -110,7 +110,9 @@ contract RewardTracker is IERC20, ReentrancyGuard, IRewardTracker, Governable {
     function setCummulativeRewardRate(uint256 _cummulativeRewardPerLPToken) public onlyGov {
         uint256 oldValue = cummulativeRewardPerLPToken;
         cummulativeRewardPerLPToken = _cummulativeRewardPerLPToken;
-        emit ValueChanged(2, oldValue, _cummulativeRewardPerLPToken);
+        emit ValueChanged(
+            abi.encodeWithSignature("setCummulativeRewardRate(uint256)"), oldValue, _cummulativeRewardPerLPToken
+        );
     }
 
     function withdrawToken(address _token, address _account, uint256 _amount) external onlyGov {

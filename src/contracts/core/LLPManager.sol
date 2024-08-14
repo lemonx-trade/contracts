@@ -52,9 +52,9 @@ contract LlpManager is ReentrancyGuard, Governable, ILlpManager {
         uint256 amountOut
     );
 
-    event AddressChanged(uint256 configCode, address oldAddress, address newAddress);
-    event ValueChanged(uint256 configCode, uint256 oldValue, uint256 newValue);
-    event MapValueChanged(uint256 configCode, bytes32 encodedKey, bytes32 encodedValue);
+    event AddressChanged(bytes indexed funcSignature, address oldAddress, address newAddress);
+    event ValueChanged(bytes indexed funcSignature, uint256 oldValue, uint256 newValue);
+    event MapValueChanged(bytes indexed funcSignature, bytes32 encodedKey, bytes32 encodedValue);
 
     modifier isContract(address account) {
         require(account != address(0), "ZERO");
@@ -89,25 +89,37 @@ contract LlpManager is ReentrancyGuard, Governable, ILlpManager {
     function setUtils(address _utils) external onlyGov isContract(_utils) {
         address old_address = address(utils);
         utils = IUtils(_utils);
-        emit AddressChanged(1, old_address, _utils); // 1 for utils
+        emit AddressChanged(abi.encodeWithSignature("setUtils(address)"), old_address, _utils);
     }
     //  L1 missing events
 
     function setHandler(address _handler, bool _isActive) external onlyGov {
         isHandler[_handler] = _isActive;
-        emit MapValueChanged(1, bytes32(abi.encodePacked(_handler)), bytes32(abi.encodePacked(_isActive))); // 1 for isHandler
+        emit MapValueChanged(
+            abi.encodeWithSignature("setHandler(address)"),
+            bytes32(abi.encodePacked(_handler)),
+            bytes32(abi.encodePacked(_isActive))
+        );
     }
     //  L1 missing events
 
     function whiteListToken(address token) public onlyGov {
         whiteListedTokens[token] = true;
-        emit MapValueChanged(2, bytes32(abi.encodePacked(token)), bytes32(abi.encodePacked(true))); // 2 for whiteListedTokens
+        emit MapValueChanged(
+            abi.encodeWithSignature("whiteListToken(address)"),
+            bytes32(abi.encodePacked(token)),
+            bytes32(abi.encodePacked(true))
+        );
     }
     //  L1 missing events
 
     function removeFromWhiteListToken(address token) public onlyGov {
         whiteListedTokens[token] = false;
-        emit MapValueChanged(3, bytes32(abi.encodePacked(token)), bytes32(abi.encodePacked(false))); // 2 for whiteListedTokens
+        emit MapValueChanged(
+            abi.encodeWithSignature("removeFromWhiteListToken(address)"),
+            bytes32(abi.encodePacked(token)),
+            bytes32(abi.encodePacked(false))
+        );
     }
     //  L1 missing events
     //  M3 Missing threshold - NOTE: Business logic  Can't be a predetermined threshold
@@ -115,7 +127,7 @@ contract LlpManager is ReentrancyGuard, Governable, ILlpManager {
     function setMaxPoolValue(uint256 _maxPoolValue) public onlyGov {
         uint256 oldValue = maxPoolValue;
         maxPoolValue = _maxPoolValue;
-        emit ValueChanged(1, oldValue, _maxPoolValue); // 1 for maxPoolValue
+        emit ValueChanged(abi.encodeWithSignature("setMaxPoolValue(uint256)"), oldValue, _maxPoolValue);
     }
     //  L1 missing events
 
@@ -123,7 +135,7 @@ contract LlpManager is ReentrancyGuard, Governable, ILlpManager {
         require(_cooldownDuration <= MAX_COOLDOWN_DURATION, "LlpManager: invalid _cooldownDuration");
         uint256 oldValue = cooldownDuration;
         cooldownDuration = _cooldownDuration;
-        emit ValueChanged(2, oldValue, _cooldownDuration); // 2 for cooldownDuration
+        emit ValueChanged(abi.encodeWithSignature("setCooldownDuration(uint256)"), oldValue, _cooldownDuration);
     }
     //  M2 check for isContract
     //  L1 missing events
@@ -131,7 +143,7 @@ contract LlpManager is ReentrancyGuard, Governable, ILlpManager {
     function setVault(address _vault) external onlyGov isContract(_vault) {
         address oldValue = address(vault);
         vault = IVault(_vault);
-        emit AddressChanged(2, oldValue, _vault); // 3 for vault
+        emit AddressChanged(abi.encodeWithSignature("setVault(address)"), oldValue, _vault);
     }
     //  M2 check for isContract
     //  L1 missing events
@@ -139,7 +151,7 @@ contract LlpManager is ReentrancyGuard, Governable, ILlpManager {
     function setUsdl(address _usdl) external onlyGov isContract(_usdl) {
         address oldValue = usdl;
         usdl = _usdl;
-        emit AddressChanged(3, oldValue, _usdl); // 4 for usdl
+        emit AddressChanged(abi.encodeWithSignature("setUsdl(address)"), oldValue, _usdl);
     }
     //  M2 check for isContract
     //  L1 missing events
@@ -147,7 +159,7 @@ contract LlpManager is ReentrancyGuard, Governable, ILlpManager {
     function setLlp(address _llp) external onlyGov isContract(_llp) {
         address oldAddress = _llp;
         llp = _llp;
-        emit AddressChanged(4, oldAddress, _llp); // 5 for llp
+        emit AddressChanged(abi.encodeWithSignature("setLlp(address)"), oldAddress, _llp);
     }
 
     function addLiquidityForAccount(
