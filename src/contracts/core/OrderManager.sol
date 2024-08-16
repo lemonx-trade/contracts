@@ -23,7 +23,7 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
     bytes32[] public increasePositionRequestKeys;
     mapping(address => uint256) public decreasePositionsIndex;
     mapping(bytes32 => StructsUtils.DecreasePositionRequest) public decreasePositionRequests;
-    bytes32[] decreasePositionRequestKeys;
+    bytes32[] public decreasePositionRequestKeys;
     mapping(address => bool) public isPositionKeeper;
     uint256 public minBlockDelayKeeper;
     uint256 public minTimeDelayPublic;

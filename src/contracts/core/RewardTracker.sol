@@ -37,7 +37,7 @@ contract RewardTracker is IERC20, ReentrancyGuard, IRewardTracker, Governable {
     mapping(address => bool) public isHandler;
     address public rewardToken;
     uint256 public rewardPrecision = 1000000;
-    address admin;
+    address public admin;
     uint256 public cummulativeRewardPerLPToken = 0;
 
     event Claim(address indexed fundingAccount, address indexed receiver, uint256 amount);
