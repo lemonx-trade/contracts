@@ -51,19 +51,19 @@ contract PriceFeed is IPriceFeed, Governable {
         _;
     }
 
-    function setOrderManager(address _orderManager) external onlyGov {
+    function setOrderManager(address _orderManager) external onlyGov validAddress(_orderManager) {
         orderManager = IOrderManager(_orderManager);
     }
 
-    function setRewardRouter(address _rewardRouter) external onlyGov {
+    function setRewardRouter(address _rewardRouter) external onlyGov validAddress(_rewardRouter) {
         rewardRouter = IRewardRouter(_rewardRouter);
     }
 
-    function setUpdater(address _updater) external onlyGov {
+    function setUpdater(address _updater) external onlyGov validAddress(_updater) {
         updater[_updater] = true;
     }
 
-    function removeUpdater(address _updater) external onlyGov {
+    function removeUpdater(address _updater) external onlyGov validAddress(_updater) {
         updater[_updater] = false;
     }
 

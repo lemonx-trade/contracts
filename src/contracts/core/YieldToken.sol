@@ -37,6 +37,12 @@ contract YieldToken is IERC20, IYieldToken {
         _;
     }
 
+    modifier validAddress(address _addr) {
+        require(_addr != address(0), "ZERO");
+        require(_addr != 0x000000000000000000000000000000000000dEaD, "DEAD");
+        _;
+    }
+
     constructor(string memory _name, string memory _symbol, uint256 _initialSupply) {
         name = _name;
         symbol = _symbol;
@@ -45,7 +51,7 @@ contract YieldToken is IERC20, IYieldToken {
         _mint(msg.sender, _initialSupply);
     }
 
-    function setGov(address _gov) external onlyGov {
+    function setGov(address _gov) external onlyGov validAddress(_gov) {
         gov = _gov;
     }
 
@@ -54,7 +60,7 @@ contract YieldToken is IERC20, IYieldToken {
         symbol = _symbol;
     }
 
-    function addAdmin(address _account) external onlyGov {
+    function addAdmin(address _account) external onlyGov validAddress(_account) {
         admins[_account] = true;
     }
 
