@@ -56,11 +56,11 @@ contract PythPriceFeed is IPriceFeed, Governable {
         _;
     }
 
-    function setOrderManager(address _orderManager) external onlyGov {
+    function setOrderManager(address _orderManager) external onlyGov validAddress(_orderManager) {
         orderManager = IOrderManager(_orderManager);
     }
 
-    function setRewardRouter(address _rewardRouter) external onlyGov {
+    function setRewardRouter(address _rewardRouter) external onlyGov validAddress(_rewardRouter) {
         rewardRouter = IRewardRouter(_rewardRouter);
     }
 
@@ -72,7 +72,7 @@ contract PythPriceFeed is IPriceFeed, Governable {
         updater[_updater] = false;
     }
 
-    function setPythContract(address _pythContract) external onlyGov {
+    function setPythContract(address _pythContract) external onlyGov validAddress(_pythContract) {
         pythContract = _pythContract;
     }
 

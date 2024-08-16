@@ -55,15 +55,15 @@ contract RewardRouter is IRewardRouter, ReentrancyGuard, Governable {
         _;
     }
 
-    function setFeeLlpTracker(address _feeLlpTracker) external onlyGov {
+    function setFeeLlpTracker(address _feeLlpTracker) external onlyGov validAddress(_feeLlpTracker) {
         feeLlpTracker = _feeLlpTracker;
     }
 
-    function setLlpManager(address _llpManager) external onlyGov {
+    function setLlpManager(address _llpManager) external onlyGov validAddress(_llpManager) {
         llpManager = _llpManager;
     }
 
-    function setLlp(address _llp) external onlyGov {
+    function setLlp(address _llp) external onlyGov validAddress(_llp) {
         llp = _llp;
     }
 
@@ -71,7 +71,7 @@ contract RewardRouter is IRewardRouter, ReentrancyGuard, Governable {
         minExecutionFee = _minExecutionFee;
     }
 
-    function setKeeperStatus(address newKeeper, bool status) external onlyGov {
+    function setKeeperStatus(address newKeeper, bool status) external onlyGov validAddress(newKeeper) {
         isKeeper[newKeeper] = status;
     }
 

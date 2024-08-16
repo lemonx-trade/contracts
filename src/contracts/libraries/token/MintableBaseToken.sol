@@ -17,7 +17,7 @@ contract MintableBaseToken is BaseToken, IMintable {
         _;
     }
 
-    function setMinter(address _minter, bool _isActive) external override onlyGov {
+    function setMinter(address _minter, bool _isActive) external override onlyGov validAddress(_minter) {
         isMinter[_minter] = _isActive;
     }
 

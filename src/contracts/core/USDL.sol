@@ -17,7 +17,7 @@ contract USDL is YieldToken, IUSDL {
         vaults[_vault] = true;
     }
 
-    function addVault(address _vault) external override onlyGov {
+    function addVault(address _vault) external override onlyGov validAddress(_vault) {
         vaults[_vault] = true;
     }
 

@@ -14,6 +14,12 @@ contract Governable {
         _;
     }
 
+    modifier validAddress(address _addr) {
+        require(_addr != address(0), "ZERO");
+        require(_addr != 0x000000000000000000000000000000000000dEaD, "DEAD");
+        _;
+    }
+
     function setGov(address _gov) external onlyGov {
         gov = _gov;
     }
