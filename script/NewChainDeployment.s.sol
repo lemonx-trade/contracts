@@ -33,11 +33,11 @@ contract NewChainDeployment is Script {
     uint256 constant maxTimeDelay = 180;
     uint256 constant liquidationFeeUsd = 4 * 10 ** 30;
     uint256 constant liquidationFactor = 70;
-    uint256 constant maxGlobalLongSizeEth = 2000;
-    uint256 constant maxGlobalShortSizeEth = 2000;
-    uint256 constant maxGlobalLongSizeBtc = 3000;
-    uint256 constant maxGlobalShortSizeBtc = 3000;
-    uint256 constant oiImbalanceThreshold = 10000;
+    uint256 constant maxGlobalLongSizeEth = 20000; // changed
+    uint256 constant maxGlobalShortSizeEth = 20000; // changed
+    uint256 constant maxGlobalLongSizeBtc = 30000; // changed
+    uint256 constant maxGlobalShortSizeBtc = 30000; // changed
+    uint256 constant oiImbalanceThreshold = 100000; // changed
     address[] rewardTrackerDepositToken;
     uint256 constant borrowingExponent = 1;
     uint256 constant borrowingInterval = 60;
@@ -151,8 +151,8 @@ contract NewChainDeployment is Script {
         Utils utils = new Utils(vault, pricefeed, tierBasedTradingFees);
         utils.setMaintanenceMargin(vm.envAddress("BTC"), 200);
         utils.setMaintanenceMargin(vm.envAddress("ETH"), 200);
-        utils.setMaintanenceMargin(vm.envAddress("MERL"), 200);
-        utils.setTokenPremiumPositionFee(vm.envAddress("MERL"), 10);
+        // utils.setMaintanenceMargin(vm.envAddress("MERL"), 200);
+        // utils.setTokenPremiumPositionFee(vm.envAddress("MERL"), 10);
         console.log("Utils deployed at address: ", address(utils));
         return utils;
     }
@@ -196,13 +196,13 @@ contract NewChainDeployment is Script {
         console.log("PriceFeed deployed at address: ", address(priceFeed));
         // be mindfull of the token to id mappign order in pricefeed
         priceFeed.updateTokenIdMapping(vm.envAddress("USDC"), vm.envBytes32("USDC_PYTH_FEED_MAINNET")); // using same priceId because unused
+        priceFeed.updateTokenIdMapping(vm.envAddress("ETH"), vm.envBytes32("ETH_PYTH_FEED_MAINNET")); // order change here
         priceFeed.updateTokenIdMapping(vm.envAddress("BTC"), vm.envBytes32("BTC_PYTH_FEED_MAINNET"));
-        priceFeed.updateTokenIdMapping(vm.envAddress("ETH"), vm.envBytes32("ETH_PYTH_FEED_MAINNET"));
-        priceFeed.updateTokenIdMapping(vm.envAddress("MERL"), vm.envBytes32("MERL_PYTH_PRICE_ID")); // priceId does not matter
+        // priceFeed.updateTokenIdMapping(vm.envAddress("MERL"), vm.envBytes32("MERL_PYTH_PRICE_ID")); // priceId does not matter
         // set lp market order as updater as well
         priceFeed.setUpdater(vm.envAddress("LP_ORDER_UPDATER"));
 
-        priceFeed.setSlippage(vm.envAddress("MERL"), 500);
+        // priceFeed.setSlippage(vm.envAddress("MERL"), 500);
         priceFeed.setSlippage(vm.envAddress("BTC"), 350);
         priceFeed.setSlippage(vm.envAddress("ETH"), 350);
         console.log("PriceFeed initialized");
@@ -230,10 +230,10 @@ contract NewChainDeployment is Script {
         vault.setManager(address(llpManager), true);
         //set tokenConfig
         vault.setTokenConfig(vm.envAddress("USDC"), vm.envUint("USDC_DECIMAL"), 0, true, true, false, maxLeverage);
-        vault.setTokenConfig(vm.envAddress("ETH"), vm.envUint("ETH_DECIMAL"), 0, false, false, true, maxLeverage);
         vault.setTokenConfig(vm.envAddress("BTC"), vm.envUint("BTC_DECIMAL"), 0, false, false, true, maxLeverage);
-        vault.setTokenConfig(vm.envAddress("BTC"), vm.envUint("BTC_DECIMAL"), 0, false, false, true, maxLeverage);
-        vault.setTokenConfig(vm.envAddress("MERL"), vm.envUint("MERL_DECIMAL"), 0, false, false, true, maxLeverage);
+        vault.setTokenConfig(vm.envAddress("ETH"), vm.envUint("ETH_DECIMAL"), 0, false, false, true, maxLeverage); //order change
+        // vault.setTokenConfig(vm.envAddress("BTC"), vm.envUint("BTC_DECIMAL"), 0, false, false, true, maxLeverage);
+        // vault.setTokenConfig(vm.envAddress("MERL"), vm.envUint("MERL_DECIMAL"), 0, false, false, true, maxLeverage);
 
         //set maxGlobalLongSize and maxGlobalShortSize
         vault.setMaxGlobalLongSize(vm.envAddress("ETH"), maxGlobalLongSizeEth);
@@ -242,22 +242,22 @@ contract NewChainDeployment is Script {
         vault.setMaxGlobalLongSize(vm.envAddress("BTC"), maxGlobalLongSizeBtc);
         vault.setMaxGlobalShortSize(vm.envAddress("BTC"), maxGlobalShortSizeBtc);
 
-        vault.setMaxGlobalLongSize(vm.envAddress("MERL"), maxGlobalLongSizeBtc);
-        vault.setMaxGlobalShortSize(vm.envAddress("MERL"), maxGlobalShortSizeBtc);
+        // vault.setMaxGlobalLongSize(vm.envAddress("MERL"), maxGlobalLongSizeBtc);
+        // vault.setMaxGlobalShortSize(vm.envAddress("MERL"), maxGlobalShortSizeBtc);
 
         vault.setOiImbalanceThreshold(vm.envAddress("ETH"), oiImbalanceThreshold);
         vault.setOiImbalanceThreshold(vm.envAddress("BTC"), oiImbalanceThreshold);
-        vault.setOiImbalanceThreshold(vm.envAddress("MERL"), oiImbalanceThreshold);
+        // vault.setOiImbalanceThreshold(vm.envAddress("MERL"), oiImbalanceThreshold);
 
         //set borrowingFeeDetails for all index tokens.
         vault.setBorrowingRate(vm.envAddress("ETH"), borrowingInterval, borrowingRateFactor, borrowingExponent);
         vault.setBorrowingRate(vm.envAddress("BTC"), borrowingInterval, borrowingRateFactor, borrowingExponent);
-        vault.setBorrowingRate(vm.envAddress("MERL"), borrowingInterval, borrowingRateFactor, borrowingExponent);
+        // vault.setBorrowingRate(vm.envAddress("MERL"), borrowingInterval, borrowingRateFactor, borrowingExponent);
 
         //set fundingFeeDetails for all index tokens.
         vault.setFundingRate(vm.envAddress("ETH"), fundingInterval, fundingRateFactor, fundingExponent);
         vault.setFundingRate(vm.envAddress("BTC"), fundingInterval, fundingRateFactor, fundingExponent);
-        vault.setFundingRate(vm.envAddress("MERL"), fundingInterval, fundingRateFactor, fundingExponent);
+        // vault.setFundingRate(vm.envAddress("MERL"), fundingInterval, fundingRateFactor, fundingExponent);
 
         vault.setPoolSafetyFactorInBps(poolSafetyFactorInBps);
         vault.setFees(
