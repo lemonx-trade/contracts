@@ -162,12 +162,6 @@ contract Vault is ReentrancyGuard, IVault {
         gov = msg.sender;
     }
 
-    modifier validAddress(address _addr) {
-        require(_addr != address(0), "ZERO");
-        require(_addr != 0x000000000000000000000000000000000000dEaD, "DEAD");
-        _;
-    }
-
     // we have this validation as a function instead of a modifier to reduce contract size
     function _onlyGov() private view {
         _validate(msg.sender == gov, 1);
@@ -191,12 +185,12 @@ contract Vault is ReentrancyGuard, IVault {
         liquidationFactor = _liquidationFactor;
     }
 
-    function setUtils(address _utils) external override validAddress(_utils) {
+    function setUtils(address _utils) external override {
         _onlyGov();
         utils = IUtils(_utils);
     }
 
-    function setGov(address newGov) external validAddress(newGov) {
+    function setGov(address newGov) external {
         _onlyGov();
         gov = newGov;
     }
@@ -211,12 +205,12 @@ contract Vault is ReentrancyGuard, IVault {
         ceaseLPActivity = _cease;
     }
 
-    function setOrderManager(address newOrderManager, bool _isOrderManager) external validAddress(newOrderManager) {
+    function setOrderManager(address newOrderManager, bool _isOrderManager) external {
         _onlyGov();
         orderManagers[newOrderManager] = _isOrderManager;
     }
 
-    function setUsdl(address newUsdl) external validAddress(newUsdl) {
+    function setUsdl(address newUsdl) external {
         _onlyGov();
         usdl = newUsdl;
     }
@@ -263,7 +257,7 @@ contract Vault is ReentrancyGuard, IVault {
         maxGasPrice = _maxGasPrice;
     }
 
-    function setPriceFeed(address _priceFeed) external override validAddress(_priceFeed) {
+    function setPriceFeed(address _priceFeed) external override {
         _onlyGov();
         priceFeed = _priceFeed;
     }
