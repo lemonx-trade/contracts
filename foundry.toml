@@ -5,3 +5,8 @@ libs = ["lib"]
 gas_reports = ["OrderManager"]
 solc = "0.8.19"
 # See more config options https://github.com/foundry-rs/foundry/tree/master/config
+
+
+
+[etherscan]
+core-testnet = { key = "64f20a16c0904021b26e8a3cf4485c3a", chain = "1115", url = "https://api.test.btcs.network/api" , enabled=true}
