@@ -748,6 +748,8 @@ contract Vault is ReentrancyGuard, IVault {
             );
         }
 
+        uint256 collateralDelta = _transferIn(_collateralToken);
+        uint256 collateralDeltaUsd = utils.tokenToUsdMin(_collateralToken, collateralDelta);
         int256 fee = _collectMarginFees(
             _account,
             _collateralToken,
@@ -757,10 +759,9 @@ contract Vault is ReentrancyGuard, IVault {
             position.size,
             position.entryBorrowingRate,
             position.entryFundingRate,
-            position.collateral
+            collateralDeltaUsd
         );
-        uint256 collateralDelta = _transferIn(_collateralToken);
-        uint256 collateralDeltaUsd = utils.tokenToUsdMin(_collateralToken, collateralDelta);
+
         position.collateral = position.collateral + (collateralDeltaUsd);
         if (fee > 0) {
             _validate(position.collateral >= uint256(fee), 30);
