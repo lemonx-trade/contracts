@@ -14,11 +14,15 @@ contract TierBasedTradingFees is ITierBasedTradingFees, Governable {
         _;
     }
 
-    function setTierUpdater(address account, bool status) external onlyGov {
+    function setTierUpdater(address account, bool status) external onlyGov validAddress(account) {
         tierUpdater[account] = status;
     }
 
-    function setTierBasedTradingBasisPoints(address trader, uint256 basisPoints) external onlyTierUpdater {
+    function setTierBasedTradingBasisPoints(address trader, uint256 basisPoints)
+        external
+        validAddress(trader)
+        onlyTierUpdater
+    {
         tierBasedTradingBasisPoints[trader] = basisPoints;
     }
 }

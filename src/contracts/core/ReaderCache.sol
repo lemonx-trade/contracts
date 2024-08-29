@@ -24,23 +24,23 @@ contract ReaderCache is Governable {
         fLLP = ILLP(_fLLP);
     }
 
-    function setVault(address _vault) external onlyGov {
+    function setVault(address _vault) external onlyGov validAddress(_vault) {
         vault = IVault(_vault);
     }
 
-    function setUtils(address _utils) external onlyGov {
+    function setUtils(address _utils) external onlyGov validAddress(_utils) {
         utils = IUtils(_utils);
     }
 
-    function setReaderContract(address _readerContract) external onlyGov {
+    function setReaderContract(address _readerContract) external onlyGov validAddress(_readerContract) {
         readerContract = IReaderContract(_readerContract);
     }
 
-    function setLLP(address _llp) external onlyGov {
+    function setLLP(address _llp) external onlyGov validAddress(_llp) {
         llp = ILLP(_llp);
     }
 
-    function setFLLP(address _fLLP) external onlyGov {
+    function setFLLP(address _fLLP) external onlyGov validAddress(_fLLP) {
         fLLP = ILLP(_fLLP);
     }
 

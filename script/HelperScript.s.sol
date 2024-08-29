@@ -1,37 +1,35 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.19;
-import "forge-std/Script.sol";
-import '../src/contracts/libraries/token/IERC20.sol';
-import '../src/contracts/core/RewardRouter.sol';
-import '../src/contracts/core/RewardTracker.sol';
-import '../src/contracts/core/Utils.sol';
-import '../src/contracts/core/ReaderContract.sol';
-import '../src/contracts/core/Vault.sol';
-import '../src/contracts/core/interfaces/IVault.sol';
+pragma solidity 0.8.19;
 
+import "forge-std/Script.sol";
+import "../src/contracts/libraries/token/IERC20.sol";
+import "../src/contracts/core/RewardRouter.sol";
+import "../src/contracts/core/RewardTracker.sol";
+import "../src/contracts/core/Utils.sol";
+import "../src/contracts/core/ReaderContract.sol";
+import "../src/contracts/core/Vault.sol";
+import "../src/contracts/core/interfaces/IVault.sol";
 
 contract HelperScript is Script {
-
-
     //util functions
     function addLiquidity() public {
         IERC20 usdc = IERC20(vm.envAddress("LINEA_USDCL"));
-        usdc.approve(vm.envAddress("LINEA_LLP_MANAGER"), 10000000*10**18);
+        usdc.approve(vm.envAddress("LINEA_LLP_MANAGER"), 10000000 * 10 ** 18);
         RewardRouter rewardRouter = RewardRouter(vm.envAddress("LINEA_REWARD_ROUTER"));
         rewardRouter.mintLlp(vm.envAddress("LINEA_USDCL"), 100000000000000000000000, 0, 0);
     }
 
     function distributeRewards() public {
-        uint usdcAmount = 568*10**6;
+        uint256 usdcAmount = 568 * 10 ** 6;
         RewardTracker rewardTracker = RewardTracker(vm.envAddress("REWARD_TRACKER"));
-        uint stakedAmount = rewardTracker.totalSupply();
+        uint256 stakedAmount = rewardTracker.totalSupply();
         console.log("staked amount: ", stakedAmount);
-        uint rewardPerToken = (usdcAmount* rewardTracker.rewardPrecision())/stakedAmount;
+        uint256 rewardPerToken = (usdcAmount * rewardTracker.rewardPrecision()) / stakedAmount;
         console.log("reward per token: ", rewardPerToken);
-        uint cumRewardPerToken = rewardTracker.cummulativeRewardPerLPToken() + rewardPerToken;
+        uint256 cumRewardPerToken = rewardTracker.cummulativeRewardPerLPToken() + rewardPerToken;
         rewardTracker.setCummulativeRewardRate(cumRewardPerToken);
-        uint amount = rewardTracker.claimable(0x818484227ABF04550c6c242B6119B7c94d2E72b3);
+        uint256 amount = rewardTracker.claimable(0x818484227ABF04550c6c242B6119B7c94d2E72b3);
         console.log("Amount: ", amount);
     }
 

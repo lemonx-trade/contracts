@@ -69,7 +69,7 @@ contract LlpManager is ReentrancyGuard, Governable, ILlpManager {
         maxPoolValue = _maxPoolValue;
     }
 
-    function setUtils(address _utils) external onlyGov {
+    function setUtils(address _utils) external onlyGov validAddress(_utils) {
         utils = IUtils(_utils);
     }
 
@@ -94,15 +94,15 @@ contract LlpManager is ReentrancyGuard, Governable, ILlpManager {
         cooldownDuration = _cooldownDuration;
     }
 
-    function setVault(address _vault) external onlyGov {
+    function setVault(address _vault) external onlyGov validAddress(_vault) {
         vault = IVault(_vault);
     }
 
-    function setUsdl(address _usdl) external onlyGov {
+    function setUsdl(address _usdl) external onlyGov validAddress(_usdl) {
         usdl = _usdl;
     }
 
-    function setLlp(address _llp) external onlyGov {
+    function setLlp(address _llp) external onlyGov validAddress(_llp) {
         llp = _llp;
     }
 

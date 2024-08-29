@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity ^0.8.19;
+pragma solidity 0.8.19;
 
 import "../libraries/token/SafeERC20.sol";
 import "../libraries/token/IERC20.sol";
@@ -33,6 +33,12 @@ contract BaseOrderManager {
         _;
     }
 
+    modifier validAddress(address _addr) {
+        require(_addr != address(0), "ZERO");
+        require(_addr != 0x000000000000000000000000000000000000dEaD, "DEAD");
+        _;
+    }
+
     constructor(address _vault, address _utils, address _pricefeed, uint256 _depositFee) {
         vault = _vault;
         utils = _utils;
@@ -41,15 +47,15 @@ contract BaseOrderManager {
         depositFee = _depositFee;
     }
 
-    function setAdmin(address _admin) external onlyAdmin {
+    function setAdmin(address _admin) external onlyAdmin validAddress(_admin) {
         admin = _admin;
     }
 
-    function setVault(address _vault) external onlyAdmin {
+    function setVault(address _vault) external onlyAdmin validAddress(_vault) {
         vault = _vault;
     }
 
-    function setUtils(address _utils) external onlyAdmin {
+    function setUtils(address _utils) external onlyAdmin validAddress(_utils) {
         utils = _utils;
     }
 

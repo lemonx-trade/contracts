@@ -91,15 +91,19 @@ contract Utils is IUtils, Governable {
         fundingFactorForHighOISide = _fundingFactorForHighOISide;
     }
 
-    function setTierBasedTradingFees(address _tierBasedTradingFees) external onlyGov {
+    function setTierBasedTradingFees(address _tierBasedTradingFees)
+        external
+        onlyGov
+        validAddress(_tierBasedTradingFees)
+    {
         tierBasedTradingFees = ITierBasedTradingFees(_tierBasedTradingFees);
     }
 
-    function setVault(IVault _vault) external onlyGov {
+    function setVault(IVault _vault) external onlyGov validAddress(address(_vault)) {
         vault = _vault;
     }
 
-    function setPriceFeed(address _pricefeed) external onlyGov {
+    function setPriceFeed(address _pricefeed) external onlyGov validAddress(_pricefeed) {
         priceFeed = IPriceFeed(_pricefeed);
     }
 

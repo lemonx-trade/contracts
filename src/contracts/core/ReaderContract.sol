@@ -72,15 +72,15 @@ contract ReaderContract is Governable {
         tierBorrowingRateStartTime = _tierBorrowingRateStartTime;
     }
 
-    function setVault(address _vault) public onlyGov {
+    function setVault(address _vault) public onlyGov validAddress(_vault) {
         vault = IVault(_vault);
     }
 
-    function setUtils(address _utils) public onlyGov {
+    function setUtils(address _utils) public onlyGov validAddress(_utils) {
         utils = IUtils(_utils);
     }
 
-    function setUsdc(address _usdc) public onlyGov {
+    function setUsdc(address _usdc) public onlyGov validAddress(_usdc) {
         usdc = IERC20(_usdc);
     }
 
