@@ -73,6 +73,12 @@ contract Timelock is ITimelock {
         _;
     }
 
+    modifier validAddress(address _addr) {
+        require(_addr != address(0), "ZERO");
+        require(_addr != 0x000000000000000000000000000000000000dEaD, "DEAD");
+        _;
+    }
+
     constructor(address _admin, uint256 _buffer, address _mintReceiver, address _llpManager) {
         require(_buffer <= MAX_BUFFER, "Timelock: invalid _buffer");
         admin = _admin;
@@ -81,20 +87,20 @@ contract Timelock is ITimelock {
         llpManager = _llpManager;
     }
 
-    function setAdmin(address _admin) external override onlyAdmin {
+    function setAdmin(address _admin) external override onlyAdmin validAddress(_admin) {
         admin = _admin;
     }
 
-    function setExternalAdmin(address _target, address _admin) external onlyAdmin {
+    function setExternalAdmin(address _target, address _admin) external onlyAdmin validAddress(_target) {
         require(_target != address(this), "Timelock: invalid _target");
         IAdmin(_target).setAdmin(_admin);
     }
 
-    function setContractHandler(address _handler, bool _isActive) external onlyAdmin {
+    function setContractHandler(address _handler, bool _isActive) external onlyAdmin validAddress(_handler) {
         isHandler[_handler] = _isActive;
     }
 
-    function setKeeper(address _keeper, bool _isActive) external onlyAdmin {
+    function setKeeper(address _keeper, bool _isActive) external onlyAdmin validAddress(_keeper) {
         isKeeper[_keeper] = _isActive;
     }
 

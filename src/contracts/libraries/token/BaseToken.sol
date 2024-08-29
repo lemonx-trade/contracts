@@ -37,6 +37,12 @@ contract BaseToken is IERC20, IBaseToken {
         _;
     }
 
+    modifier validAddress(address _addr) {
+        require(_addr != address(0), "ZERO");
+        require(_addr != 0x000000000000000000000000000000000000dEaD, "DEAD");
+        _;
+    }
+
     constructor(string memory _name, string memory _symbol, uint256 _initialSupply) {
         name = _name;
         symbol = _symbol;
@@ -44,7 +50,7 @@ contract BaseToken is IERC20, IBaseToken {
         _mint(msg.sender, _initialSupply);
     }
 
-    function setGov(address _gov) external onlyGov {
+    function setGov(address _gov) external onlyGov validAddress(_gov) {
         gov = _gov;
     }
 
@@ -53,11 +59,11 @@ contract BaseToken is IERC20, IBaseToken {
         symbol = _symbol;
     }
 
-    function addAdmin(address _account) external onlyGov {
+    function addAdmin(address _account) external onlyGov validAddress(_account) {
         admins[_account] = true;
     }
 
-    function removeAdmin(address _account) external override onlyGov {
+    function removeAdmin(address _account) external override onlyGov validAddress(_account) {
         admins[_account] = false;
     }
 
@@ -70,7 +76,7 @@ contract BaseToken is IERC20, IBaseToken {
         inPrivateTransferMode = _inPrivateTransferMode;
     }
 
-    function setHandler(address _handler, bool _isActive) external onlyGov {
+    function setHandler(address _handler, bool _isActive) external onlyGov validAddress(_handler) {
         isHandler[_handler] = _isActive;
     }
 
