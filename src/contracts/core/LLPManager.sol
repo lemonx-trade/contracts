@@ -32,7 +32,7 @@ contract LlpManager is ReentrancyGuard, Governable, ILlpManager {
 
     mapping(address => bool) public isHandler;
 
-    event AddLiquidity(
+    event AddLemonXLiquidity(
         address account,
         address token,
         uint256 amount,
@@ -42,7 +42,7 @@ contract LlpManager is ReentrancyGuard, Governable, ILlpManager {
         uint256 mintAmount
     );
 
-    event RemoveLiquidity(
+    event RemoveLemonXLiquidity(
         address account,
         address token,
         uint256 llpAmount,
@@ -175,7 +175,7 @@ contract LlpManager is ReentrancyGuard, Governable, ILlpManager {
 
         lastAddedAt[_account] = block.timestamp;
 
-        emit AddLiquidity(_account, _token, _amount, aumInusdl, llpSupply, usdlAmount, mintAmount);
+        emit AddLemonXLiquidity(_account, _token, _amount, aumInusdl, llpSupply, usdlAmount, mintAmount);
         return mintAmount;
     }
 
@@ -209,7 +209,7 @@ contract LlpManager is ReentrancyGuard, Governable, ILlpManager {
         uint256 amountOut = vault.sellUSDL(_tokenOut, _receiver);
         require(amountOut >= _minOut, "LlpManager: insufficient output");
 
-        emit RemoveLiquidity(_account, _tokenOut, _llpAmount, aumInusdl, llpSupply, usdlAmount, amountOut);
+        emit RemoveLemonXLiquidity(_account, _tokenOut, _llpAmount, aumInusdl, llpSupply, usdlAmount, amountOut);
 
         return amountOut;
     }

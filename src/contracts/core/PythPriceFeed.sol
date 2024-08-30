@@ -40,9 +40,9 @@ contract PythPriceFeed is IPriceFeed, Governable {
     IOrderManager public orderManager;
     IRewardRouter public rewardRouter;
 
-    event PriceSet(TokenPrice priceSet);
-    event NoDarkOraclePrice(address token, uint256 time);
-    event PythPricesDelayed(address token, uint256 currentTime, uint256 priceTime);
+    event LemonXPythPriceSet(TokenPrice priceSet);
+    event LemonXPythNoDarkOraclePrice(address token, uint256 time);
+    event LemonXPythPricesDelayed(address token, uint256 currentTime, uint256 priceTime);
 
     constructor(uint256 _maxAllowedDelay, address _pythContract, address _updater, uint256 _maxAllowedDelta) {
         maxAllowedDelay = _maxAllowedDelay;
@@ -148,7 +148,7 @@ contract PythPriceFeed is IPriceFeed, Governable {
             _darkOraclePrice.publishTime
         );
         tokenToPrice[_tokenAddress] = priceObject;
-        emit PriceSet(priceObject);
+        emit LemonXPythPriceSet(priceObject);
     }
 
     function setPrices(bytes[] calldata _priceUpdateData, PriceArgs[] calldata _darkOraclePrices)
@@ -187,8 +187,8 @@ contract PythPriceFeed is IPriceFeed, Governable {
                 _pythPrice.publishTime
             );
             tokenToPrice[_tokenAddress] = tokenPrice;
-            emit PriceSet(tokenPrice);
-            emit NoDarkOraclePrice(_tokenAddress, block.timestamp);
+            emit LemonXPythPriceSet(tokenPrice);
+            emit LemonXPythNoDarkOraclePrice(_tokenAddress, block.timestamp);
         } else if (allowedDelta(pythPrice, darkOraclePrice)) {
             _setPrice(_tokenAddress, _darkOraclePrice);
         } else {
@@ -201,7 +201,7 @@ contract PythPriceFeed is IPriceFeed, Governable {
                 _darkOraclePrice.publishTime
             );
             tokenToPrice[_tokenAddress] = priceObject;
-            emit PriceSet(priceObject);
+            emit LemonXPythPriceSet(priceObject);
         }
     }
 

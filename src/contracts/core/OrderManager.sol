@@ -41,7 +41,7 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
     uint256 public minPurchaseUSDAmountMarketOrder; //this will be in 10^18
     uint256 public minPurchaseUSDAmountLimitOrder; // this will be in 10^18
 
-    event CreateIncreasePosition(
+    event CreateLemonXIncreasePosition(
         address indexed account,
         address _collateralToken,
         address indexToken,
@@ -57,7 +57,7 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
         uint256 gasPrice
     );
 
-    event CancelIncreasePosition(
+    event CancelLemonXIncreasePosition(
         address indexed account,
         address _collateralToken,
         address indexToken,
@@ -70,7 +70,7 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
         uint256 timeGap
     );
 
-    event CreateDecreasePosition(
+    event CreateLemonXDecreasePosition(
         address indexed account,
         address _collateralToken,
         address indexToken,
@@ -85,7 +85,7 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
         uint256 blockTime
     );
 
-    event ExecuteDecreasePosition(
+    event ExecuteLemonXDecreasePosition(
         address indexed account,
         address _collateralToken,
         address indexToken,
@@ -98,7 +98,7 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
         uint256 timeGap
     );
 
-    event CancelDecreasePosition(
+    event CancelLemonXDecreasePosition(
         address indexed account,
         address _collateralToken,
         address indexToken,
@@ -111,7 +111,7 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
         uint256 timeGap
     );
 
-    event ExecuteIncreasePosition(
+    event ExecuteLemonXIncreasePosition(
         address indexed account,
         address _collateralToken,
         address indexToken,
@@ -124,7 +124,7 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
         uint256 timeGap
     );
 
-    event CreateOrder(
+    event CreateLemonXOrder(
         address indexed account,
         address collateralToken,
         address indexToken,
@@ -139,7 +139,7 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
         bool isMaxOrder
     );
 
-    event UpdateOrder(
+    event UpdateLemonXOrder(
         address indexed account,
         address collateralToken,
         address indexToken,
@@ -153,7 +153,7 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
         bool isMaxOrder
     );
 
-    event CancelOrder(
+    event CancelLemonXOrder(
         address indexed account,
         address collateralToken,
         address indexToken,
@@ -167,7 +167,7 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
         bool indexed isIncreaseOrder,
         bool isMaxOrder
     );
-    event ExecuteOrder(
+    event ExecuteLemonXOrder(
         address indexed account,
         address collateralToken,
         address indexToken,
@@ -182,11 +182,11 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
         bool indexed isIncreaseOrder
     );
 
-    event SetPositionKeeper(address indexed account, bool isActive);
-    event SetOrderKeeper(address indexed account, bool isActive);
-    event SetLiquidator(address indexed account, bool isActive);
+    event SetLemonXPositionKeeper(address indexed account, bool isActive);
+    event SetLemonXOrderKeeper(address indexed account, bool isActive);
+    event SetLemonXLiquidator(address indexed account, bool isActive);
 
-    event SetDelayValues(uint256 minBlockDelayKeeper, uint256 minTimeDelayPublic, uint256 maxTimeDelay);
+    event SetLemonXDelayValues(uint256 minBlockDelayKeeper, uint256 minTimeDelayPublic, uint256 maxTimeDelay);
 
     constructor(
         address _vault,
@@ -230,7 +230,7 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
 
     function setPositionKeeper(address _account, bool _isActive) external onlyAdmin {
         isPositionKeeper[_account] = _isActive;
-        emit SetPositionKeeper(_account, _isActive);
+        emit SetLemonXPositionKeeper(_account, _isActive);
     }
 
     function setMaxTPMultiplier(uint256 _maxProfitMultiplier) external onlyAdmin {
@@ -264,17 +264,17 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
         minBlockDelayKeeper = _minBlockDelayKeeper;
         minTimeDelayPublic = _minTimeDelayPublic;
         maxTimeDelay = _maxTimeDelay;
-        emit SetDelayValues(_minBlockDelayKeeper, _minTimeDelayPublic, _maxTimeDelay);
+        emit SetLemonXDelayValues(_minBlockDelayKeeper, _minTimeDelayPublic, _maxTimeDelay);
     }
 
     function setOrderKeeper(address _account, bool _isActive) external onlyAdmin {
         isOrderKeeper[_account] = _isActive;
-        emit SetOrderKeeper(_account, _isActive);
+        emit SetLemonXOrderKeeper(_account, _isActive);
     }
 
     function setLiquidator(address _account, bool _isActive) external onlyAdmin {
         isLiquidator[_account] = _isActive;
-        emit SetLiquidator(_account, _isActive);
+        emit SetLemonXLiquidator(_account, _isActive);
     }
 
     function createIncreasePosition(
@@ -372,7 +372,7 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
         );
 
         (uint256 index, bytes32 requestKey) = _storeIncreasePositionRequest(request);
-        emit CreateIncreasePosition(
+        emit CreateLemonXIncreasePosition(
             _account,
             _collateralToken,
             _indexToken,
@@ -410,7 +410,7 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
         (bool success,) = _executionFeeReceiver.call{value: request.executionFee}("");
         require(success, "OM:f");
 
-        emit CancelIncreasePosition(
+        emit CancelLemonXIncreasePosition(
             request.account,
             request._collateralToken,
             request.indexToken,
@@ -537,7 +537,7 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
             );
         }
 
-        emit ExecuteIncreasePosition(
+        emit ExecuteLemonXIncreasePosition(
             request.account,
             request._collateralToken,
             request.indexToken,
@@ -613,7 +613,7 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
         );
 
         (uint256 index, bytes32 requestKey) = _storeDecreasePositionRequest(request);
-        emit CreateDecreasePosition(
+        emit CreateLemonXDecreasePosition(
             request.account,
             request._collateralToken,
             request.indexToken,
@@ -665,7 +665,7 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
         (bool success,) = _executionFeeReceiver.call{value: request.executionFee}("");
         require(success, "OM:f");
 
-        emit CancelDecreasePosition(
+        emit CancelLemonXDecreasePosition(
             request.account,
             request._collateralToken,
             request.indexToken,
@@ -761,7 +761,7 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
         (bool success,) = _executionFeeReceiver.call{value: request.executionFee}("");
         require(success, "OM:f");
 
-        emit ExecuteDecreasePosition(
+        emit ExecuteLemonXDecreasePosition(
             request.account,
             request._collateralToken,
             request.indexToken,
@@ -971,7 +971,7 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
 
     function emitOrderCreateEvent(address _account, uint256 idx) internal {
         StructsUtils.Order memory order = orders[getOrderKey(_account, idx)];
-        emit CreateOrder(
+        emit CreateLemonXOrder(
             _account,
             order.collateralToken,
             order.indexToken,
@@ -985,7 +985,7 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
             order.isIncreaseOrder,
             order.isMaxOrder
         );
-        emit UpdateOrder(
+        emit UpdateLemonXOrder(
             _account,
             order.collateralToken,
             order.indexToken,
@@ -1025,7 +1025,7 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
         order.triggerPrice = _triggerPrice;
         order.sizeDelta = _sizeDelta;
 
-        emit UpdateOrder(
+        emit UpdateLemonXOrder(
             msg.sender,
             order.collateralToken,
             order.indexToken,
@@ -1066,7 +1066,7 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
             require(success, "OM:f");
         }
 
-        emit CancelOrder(
+        emit CancelLemonXOrder(
             order.account,
             order.collateralToken,
             order.indexToken,
@@ -1081,7 +1081,7 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
             order.isMaxOrder
         );
 
-        emit UpdateOrder(
+        emit UpdateLemonXOrder(
             order.account,
             order.collateralToken,
             order.indexToken,
@@ -1159,7 +1159,7 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
         (bool success,) = _feeReceiver.call{value: order.executionFee}("");
         require(success, "OM:f");
 
-        emit ExecuteOrder(
+        emit ExecuteLemonXOrder(
             order.account,
             order.collateralToken,
             order.indexToken,
@@ -1173,7 +1173,7 @@ contract OrderManager is BaseOrderManager, IOrderManager, ReentrancyGuard {
             order.triggerAboveThreshold,
             order.isIncreaseOrder
         );
-        emit UpdateOrder(
+        emit UpdateLemonXOrder(
             order.account,
             order.collateralToken,
             order.indexToken,

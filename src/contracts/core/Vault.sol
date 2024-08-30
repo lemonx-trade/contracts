@@ -108,9 +108,13 @@ contract Vault is ReentrancyGuard, IVault {
     mapping(address => uint256) public globalShortSizesLimitBps;
     mapping(address => uint256) public globalLongSizesLimitBps;
 
-    event BuyUSDL(address account, address token, uint256 tokenAmount, uint256 usdlAmount, uint256 feeBasisPoints);
-    event SellUSDL(address account, address token, uint256 usdlAmount, uint256 tokenAmount, uint256 feeBasisPoints);
-    event IncreasePosition(
+    event BuyLemonXUSDL(
+        address account, address token, uint256 tokenAmount, uint256 usdlAmount, uint256 feeBasisPoints
+    );
+    event SellLemonXUSDL(
+        address account, address token, uint256 usdlAmount, uint256 tokenAmount, uint256 feeBasisPoints
+    );
+    event IncreaseLemonXPosition(
         bytes32 key,
         address indexed account,
         address indexed collateralToken,
@@ -121,7 +125,7 @@ contract Vault is ReentrancyGuard, IVault {
         uint256 price,
         int256 fee
     );
-    event DecreasePosition(
+    event DecreaseLemonXPosition(
         address indexed account,
         address collateralToken,
         address indexed indexToken,
@@ -132,7 +136,7 @@ contract Vault is ReentrancyGuard, IVault {
         bool indexed isLiquidated,
         int256 realisedPnl
     );
-    event UpdatePosition(
+    event UpdateLemonXPosition(
         address indexed account,
         address indexed collateralToken,
         address indexed indexToken,
@@ -146,15 +150,15 @@ contract Vault is ReentrancyGuard, IVault {
         uint256 markPrice
     );
 
-    event UpdateBorrowingRate(address token, uint256 borrowingRateForLong, uint256 borrowingRateForShort);
-    event UpdateFundingRate(address token, int256 fundingLongRate, int256 fundingShortRate);
+    event UpdateLemonXBorrowingRate(address token, uint256 borrowingRateForLong, uint256 borrowingRateForShort);
+    event UpdateLemonXFundingRate(address token, int256 fundingLongRate, int256 fundingShortRate);
 
-    event CollectSwapFees(address token, uint256 feeUsd, uint256 feeTokens);
-    event CollectMarginFees(address token, int256 feeUsd, uint256 feeTokens);
+    event CollectLemonXSwapFees(address token, uint256 feeUsd, uint256 feeTokens);
+    event CollectLemonXMarginFees(address token, int256 feeUsd, uint256 feeTokens);
 
-    event DirectPoolDeposit(address token, uint256 amount);
-    event IncreasePoolAmount(address token, uint256 amount);
-    event DecreasePoolAmount(address token, uint256 amount);
+    event DirectLemonXPoolDeposit(address token, uint256 amount);
+    event IncreaseLemonXPoolAmount(address token, uint256 amount);
+    event DecreaseLemonXPoolAmount(address token, uint256 amount);
 
     // once the parameters are verified to be working correctly,
     // gov should be set to a timelock contract or a governance contract
@@ -225,7 +229,7 @@ contract Vault is ReentrancyGuard, IVault {
         uint256 tokenAmount = _transferIn(_token);
         _validate(tokenAmount > 0, 4);
         _increasePoolAmount(_token, tokenAmount);
-        emit DirectPoolDeposit(_token, tokenAmount);
+        emit DirectLemonXPoolDeposit(_token, tokenAmount);
     }
 
     function allWhitelistedTokensLength() external view override returns (uint256) {
@@ -385,7 +389,7 @@ contract Vault is ReentrancyGuard, IVault {
         cumulativeBorrowingRatesForShorts[_indexToken] =
             cumulativeBorrowingRatesForShorts[_indexToken] + (borrowingRateForShort);
 
-        emit UpdateBorrowingRate(
+        emit UpdateLemonXBorrowingRate(
             _indexToken, cumulativeBorrowingRatesForLongs[_indexToken], cumulativeBorrowingRatesForShorts[_indexToken]
         );
     }
@@ -397,7 +401,7 @@ contract Vault is ReentrancyGuard, IVault {
         cumulativeFundingRatesForShorts[_indexToken] = cumulativeFundingRatesForShorts[_indexToken] + fundingShortRate;
         lastFundingTimes[_indexToken] = lastFundingUpdateTime;
 
-        emit UpdateFundingRate(
+        emit UpdateLemonXFundingRate(
             _indexToken, cumulativeFundingRatesForLongs[_indexToken], cumulativeFundingRatesForShorts[_indexToken]
         );
     }
@@ -428,7 +432,7 @@ contract Vault is ReentrancyGuard, IVault {
 
         IUSDL(usdl).mint(_receiver, mintAmount);
 
-        emit BuyUSDL(_receiver, _token, tokenAmount, mintAmount, feeBasisPoints);
+        emit BuyLemonXUSDL(_receiver, _token, tokenAmount, mintAmount, feeBasisPoints);
         return mintAmount;
     }
 
@@ -437,7 +441,7 @@ contract Vault is ReentrancyGuard, IVault {
         uint256 afterFeeAmount = (_amount * (BASIS_POINTS_DIVISOR - (_feeBasisPoints))) / (BASIS_POINTS_DIVISOR);
         uint256 feeAmount = _amount - (afterFeeAmount);
         feeReserves[_token] = feeReserves[_token] + (feeAmount);
-        emit CollectSwapFees(_token, utils.tokenToUsdMin(_token, feeAmount), feeAmount);
+        emit CollectLemonXSwapFees(_token, utils.tokenToUsdMin(_token, feeAmount), feeAmount);
         return afterFeeAmount;
     }
 
@@ -445,14 +449,14 @@ contract Vault is ReentrancyGuard, IVault {
         poolAmounts[_token] = poolAmounts[_token] + (_amount);
         uint256 balance = IERC20(_token).balanceOf(address(this));
         _validate(poolAmounts[_token] <= balance, 18);
-        emit IncreasePoolAmount(_token, _amount);
+        emit IncreaseLemonXPoolAmount(_token, _amount);
     }
 
     function _decreasePoolAmount(address _token, uint256 _amount) private {
         _validate(poolAmounts[_token] >= _amount, 19);
         poolAmounts[_token] = poolAmounts[_token] - (_amount);
         validateEnoughPoolAmount();
-        emit DecreasePoolAmount(_token, _amount);
+        emit DecreaseLemonXPoolAmount(_token, _amount);
     }
 
     // potential shift
@@ -477,7 +481,7 @@ contract Vault is ReentrancyGuard, IVault {
 
         _transferOut(_token, amountOut, _receiver);
 
-        emit SellUSDL(_receiver, _token, usdlAmount, amountOut, feeBasisPoints);
+        emit SellLemonXUSDL(_receiver, _token, usdlAmount, amountOut, feeBasisPoints);
 
         return amountOut;
     }
@@ -588,7 +592,7 @@ contract Vault is ReentrancyGuard, IVault {
                 }
                 updateFeeReserves(actualFeeUsd, position.collateralToken);
             }
-            emit DecreasePosition(
+            emit DecreaseLemonXPosition(
                 position.account,
                 position.collateralToken,
                 position.indexToken,
@@ -599,7 +603,7 @@ contract Vault is ReentrancyGuard, IVault {
                 true,
                 position.realisedPnl
             );
-            emit UpdatePosition(
+            emit UpdateLemonXPosition(
                 position.account,
                 position.collateralToken,
                 position.indexToken,
@@ -645,7 +649,7 @@ contract Vault is ReentrancyGuard, IVault {
             actualFeeTransfer = int256(utils.tokenToUsdMin(_collateralToken, actualUpdateTokens));
             actualFeeTransfer = -1 * actualFeeTransfer;
         }
-        emit CollectMarginFees(_collateralToken, actualFeeTransfer, actualUpdateTokens);
+        emit CollectLemonXMarginFees(_collateralToken, actualFeeTransfer, actualUpdateTokens);
         return (actualFeeTransfer, actualUpdateTokens);
     }
 
@@ -800,10 +804,10 @@ contract Vault is ReentrancyGuard, IVault {
 
         validateEnoughPoolAmount();
 
-        emit IncreasePosition(
+        emit IncreaseLemonXPosition(
             key, _account, _collateralToken, _indexToken, collateralDeltaUsd, _sizeDelta, _isLong, price, fee
         );
-        emit UpdatePosition(
+        emit UpdateLemonXPosition(
             _account,
             _collateralToken,
             _indexToken,
@@ -896,7 +900,7 @@ contract Vault is ReentrancyGuard, IVault {
                 amountOutAfterFees = utils.usdToTokenMin(_collateralToken, usdOutAfterFee);
                 _transferOut(_collateralToken, amountOutAfterFees, _receiver);
             }
-            emit DecreasePosition(
+            emit DecreaseLemonXPosition(
                 _account, _collateralToken, _indexToken, _sizeDelta, _isLong, price, fee, false, signedDelta
             );
         }
@@ -922,7 +926,7 @@ contract Vault is ReentrancyGuard, IVault {
             bytes32 key = getPositionKey(_account, _collateralToken, _indexToken, _isLong);
             deletePositionKey(key);
         }
-        emit UpdatePosition(
+        emit UpdateLemonXPosition(
             _account,
             _collateralToken,
             _indexToken,
