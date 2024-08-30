@@ -25,8 +25,8 @@ contract BaseOrderManager {
     mapping(address => uint256) public feeReserves;
     uint256 public depositFee;
 
-    event LeverageDecreased(uint256 collateralDelta, uint256 prevLeverage, uint256 nextLeverage);
-    event WithdrawFees(address token, address receiver, uint256 amount);
+    event LemonXLeverageDecreased(uint256 collateralDelta, uint256 prevLeverage, uint256 nextLeverage);
+    event WithdrawLemonXFees(address token, address receiver, uint256 amount);
 
     modifier onlyAdmin() {
         require(msg.sender == admin, "BM:403");
@@ -135,7 +135,7 @@ contract BaseOrderManager {
         // allow for a maximum of a increasePositionBufferBps decrease since there might be some swap fees taken from the collateral
         uint256 nextLeverage = (nextSize * (BASIS_POINTS_DIVISOR + _increasePositionBufferBps)) / (nextCollateral);
         if (nextLeverage < prevLeverage) {
-            emit LeverageDecreased(collateralDelta, prevLeverage, nextLeverage);
+            emit LemonXLeverageDecreased(collateralDelta, prevLeverage, nextLeverage);
             return true;
         }
 
@@ -150,7 +150,7 @@ contract BaseOrderManager {
 
         feeReserves[_token] = 0;
         IERC20(_token).safeTransfer(_receiver, amount);
-        emit WithdrawFees(_token, _receiver, amount);
+        emit WithdrawLemonXFees(_token, _receiver, amount);
     }
 
     function _collectFees(

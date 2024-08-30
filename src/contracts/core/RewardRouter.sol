@@ -35,12 +35,12 @@ contract RewardRouter is IRewardRouter, ReentrancyGuard, Governable {
     uint256 public mintRequestExecuteStart;
     uint256 public burnRequestExecuteStart;
 
-    event CreateMintRequest(address indexed account, uint256 amount);
-    event CreateBurnRequest(address indexed account, uint256 amount);
-    event CancelMintRequest(address indexed account, uint256 amount);
-    event CancelBurnRequest(address indexed account, uint256 amount);
-    event Mintllp(address indexed account, uint256 amount);
-    event Burnllp(address indexed account, uint256 amount);
+    event CreateLemonLPMintRequest(address indexed account, uint256 amount);
+    event CreateLemonLPBurnRequest(address indexed account, uint256 amount);
+    event CancelLemonLPMintRequest(address indexed account, uint256 amount);
+    event CancelLemonLPBurnRequest(address indexed account, uint256 amount);
+    event MintLemonLP(address indexed account, uint256 amount);
+    event BurnLemonLP(address indexed account, uint256 amount);
 
     function initialize(address _llp, address _llpManager, address _feeLlpTracker) external onlyGov {
         require(!isInitialized, "RewardRouter: already initialized");
@@ -90,7 +90,7 @@ contract RewardRouter is IRewardRouter, ReentrancyGuard, Governable {
         address account = msg.sender;
         uint256 llpAmount =
             ILlpManager(llpManager).addLiquidityForAccount(account, account, _token, _amount, _minUsdl, _minLlp);
-        emit Mintllp(account, llpAmount);
+        emit MintLemonLP(account, llpAmount);
         return llpAmount;
     }
 
@@ -100,7 +100,7 @@ contract RewardRouter is IRewardRouter, ReentrancyGuard, Governable {
         address account = msg.sender;
         uint256 amountOut =
             ILlpManager(llpManager).removeLiquidityForAccount(account, tokenOut, _llpAmount, _minOut, account);
-        emit Burnllp(account, _llpAmount);
+        emit BurnLemonLP(account, _llpAmount);
 
         return amountOut;
     }
@@ -151,7 +151,7 @@ contract RewardRouter is IRewardRouter, ReentrancyGuard, Governable {
             StructsUtils.MintLLPRequest(account, amount, token, executionFee, minUsdl, minLLP);
         mintRequests[requestKey] = mintRequest;
         arrayOfMintRequests.push(requestKey);
-        emit CreateMintRequest(account, amount);
+        emit CreateLemonLPMintRequest(account, amount);
     }
 
     function createBurnRequest(
@@ -173,7 +173,7 @@ contract RewardRouter is IRewardRouter, ReentrancyGuard, Governable {
             StructsUtils.BurnLLPRequest(account, amount, token, minOut, receiver, executionFee);
         burnReqeusts[requestKey] = burnRequest;
         arrayOfBurnRequests.push(requestKey);
-        emit CreateBurnRequest(account, amount);
+        emit CreateLemonLPBurnRequest(account, amount);
     }
 
     function getRequestKey(address account, uint256 index) internal pure returns (bytes32) {
@@ -254,7 +254,7 @@ contract RewardRouter is IRewardRouter, ReentrancyGuard, Governable {
             mintRequest.minUsdl,
             mintRequest.minUsdl
         );
-        emit Mintllp(mintRequest.account, llpAmount);
+        emit MintLemonLP(mintRequest.account, llpAmount);
         (bool success,) = feeReceiver.call{value: mintRequest.executionFee}("");
         require(success, "Failed to send mint execution fee to keeper");
         return true;
@@ -268,7 +268,7 @@ contract RewardRouter is IRewardRouter, ReentrancyGuard, Governable {
         IERC20(mintRequest.collateralToken).transfer(mintRequest.account, mintRequest.amount);
         (bool success,) = feeReceiver.call{value: mintRequest.executionFee}("");
         require(success, "Failed to send mint execution fee to keeper");
-        emit CancelMintRequest(mintRequest.account, mintRequest.amount);
+        emit CancelLemonLPMintRequest(mintRequest.account, mintRequest.amount);
         return true;
     }
 
@@ -284,7 +284,7 @@ contract RewardRouter is IRewardRouter, ReentrancyGuard, Governable {
             burnRequest.minOut,
             burnRequest.receiver
         );
-        emit Burnllp(burnRequest.account, llpAmount);
+        emit BurnLemonLP(burnRequest.account, llpAmount);
         (bool success,) = feeReceiver.call{value: burnRequest.executionFee}("");
         require(success, "Failed to send mint execution fee to keeper");
         return true;
@@ -295,7 +295,7 @@ contract RewardRouter is IRewardRouter, ReentrancyGuard, Governable {
         if (burnRequest.account == address(0)) {
             return true;
         }
-        emit CancelBurnRequest(burnRequest.account, burnRequest.amount);
+        emit CancelLemonLPBurnRequest(burnRequest.account, burnRequest.amount);
         return true;
     }
 

@@ -38,7 +38,7 @@ contract PriceFeed is IPriceFeed, Governable {
     IRewardRouter public rewardRouter;
     mapping(address => uint256) public slippage;
 
-    event PriceSet(TokenPrice priceSet);
+    event LemonXPriceSet(TokenPrice priceSet);
 
     constructor(uint256 _maxAllowedDelay, address _updater, uint256 _maxAllowedDelta) {
         maxAllowedDelay = _maxAllowedDelay;
@@ -142,7 +142,7 @@ contract PriceFeed is IPriceFeed, Governable {
             _darkOraclePrice.publishTime
         );
         tokenToPrice[_tokenAddress] = priceObject;
-        emit PriceSet(priceObject);
+        emit LemonXPriceSet(priceObject);
     }
 
     function setPrices(PriceArgs[] calldata _darkOraclePrices) public onlyUpdater {
