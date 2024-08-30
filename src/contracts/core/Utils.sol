@@ -36,7 +36,7 @@ contract Utils is IUtils, Governable {
     mapping(address => uint256) public override maintanenceMargin;
     mapping(address => int256) public override tokenPremiumPositionFee;
 
-    event Fees(
+    event LemonXFees(
         address account,
         address indexToken,
         bool isLong,
@@ -209,7 +209,7 @@ contract Utils is IUtils, Governable {
             if (_raise) {
                 revert("Vault: liquidation fees exceed collateral");
             }
-            emit Fees(
+            emit LemonXFees(
                 _account,
                 _indexToken,
                 _isLong,
@@ -228,7 +228,7 @@ contract Utils is IUtils, Governable {
             if (_raise) {
                 revert("Vault: maxLeverage exceeded");
             }
-            emit Fees(
+            emit LemonXFees(
                 _account,
                 _indexToken,
                 _isLong,
@@ -768,7 +768,7 @@ contract Utils is IUtils, Governable {
         int256 fundingFee = getFundingFee(_account, _collateralToken, _indexToken, _isLong, _size, _entryFundingRate);
         feeUsd = tradingFee + borrowingFee + fundingFee;
         if (msg.sender == address(vault)) {
-            emit Fees(
+            emit LemonXFees(
                 _account,
                 _indexToken,
                 _isLong,

@@ -40,9 +40,9 @@ contract RewardTracker is IERC20, ReentrancyGuard, IRewardTracker, Governable {
     address public admin;
     uint256 public cummulativeRewardPerLPToken = 0;
 
-    event Claim(address indexed fundingAccount, address indexed receiver, uint256 amount);
-    event Stakellp(address indexed fundingAccount, address indexed receiver, uint256 amount);
-    event Unstakellp(address indexed fundingAccount, address indexed receiver, uint256 amount);
+    event ClaimLemonXReward(address indexed fundingAccount, address indexed receiver, uint256 amount);
+    event StakeLemonLP(address indexed fundingAccount, address indexed receiver, uint256 amount);
+    event UnstakeLemonLP(address indexed fundingAccount, address indexed receiver, uint256 amount);
 
     constructor(string memory _name, string memory _symbol) {
         name = _name;
@@ -138,7 +138,7 @@ contract RewardTracker is IERC20, ReentrancyGuard, IRewardTracker, Governable {
 
         if (tokenAmount > 0) {
             IERC20(rewardToken).safeTransfer(_receiver, tokenAmount);
-            emit Claim(_account, _receiver, tokenAmount);
+            emit ClaimLemonXReward(_account, _receiver, tokenAmount);
         }
 
         return tokenAmount;
@@ -214,7 +214,7 @@ contract RewardTracker is IERC20, ReentrancyGuard, IRewardTracker, Governable {
         totalDepositSupply[_depositToken] = totalDepositSupply[_depositToken] + _amount;
 
         _mint(_account, _amount);
-        emit Stakellp(_fundingAccount, _account, _amount);
+        emit StakeLemonLP(_fundingAccount, _account, _amount);
     }
 
     function unstakeForAccount(address _account, address _depositToken, uint256 _amount, address _receiver)
@@ -248,6 +248,6 @@ contract RewardTracker is IERC20, ReentrancyGuard, IRewardTracker, Governable {
 
         _burn(_account, _amount);
         IERC20(_depositToken).safeTransfer(_receiver, _amount);
-        emit Unstakellp(_account, _receiver, _amount);
+        emit UnstakeLemonLP(_account, _receiver, _amount);
     }
 }

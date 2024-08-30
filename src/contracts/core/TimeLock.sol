@@ -38,14 +38,14 @@ contract Timelock is ITimelock {
     mapping(address => bool) public isHandler;
     mapping(address => bool) public isKeeper;
 
-    event SignalPendingAction(bytes32 action);
-    event SignalApprove(address token, address spender, uint256 amount, bytes32 action);
-    event SignalWithdrawToken(address target, address token, address receiver, uint256 amount, bytes32 action);
-    event SignalSetGov(address target, address gov, bytes32 action);
-    event SignalSetHandler(address target, address handler, bool isActive, bytes32 action);
-    event SignalSetPriceFeed(address vault, address priceFeed, bytes32 action);
-    event SignalRedeemUsdl(address vault, address token, uint256 amount);
-    event SignalVaultSetTokenConfig(
+    event SignalPendingLemonXAction(bytes32 action);
+    event SignalLemonXApprove(address token, address spender, uint256 amount, bytes32 action);
+    event SignalLemonXWithdrawToken(address target, address token, address receiver, uint256 amount, bytes32 action);
+    event SignalSetLemonXGov(address target, address gov, bytes32 action);
+    event SignalSetLemonXHandler(address target, address handler, bool isActive, bytes32 action);
+    event SignalSetLemonXPriceFeed(address vault, address priceFeed, bytes32 action);
+    event SignalRedeemLemonXUsdl(address vault, address token, uint256 amount);
+    event SignalLemonXVaultSetTokenConfig(
         address vault,
         address token,
         uint256 tokenDecimals,
@@ -56,7 +56,7 @@ contract Timelock is ITimelock {
         uint256 maxLeverage,
         uint256 maxOiImbalance
     );
-    event ClearAction(bytes32 action);
+    event ClearLemonXAction(bytes32 action);
 
     modifier onlyAdmin() {
         require(msg.sender == admin, "Timelock: admin forbidden");
@@ -224,7 +224,7 @@ contract Timelock is ITimelock {
     function signalApprove(address _token, address _spender, uint256 _amount) external onlyAdmin {
         bytes32 action = keccak256(abi.encodePacked("approve", _token, _spender, _amount));
         _setPendingAction(action);
-        emit SignalApprove(_token, _spender, _amount, action);
+        emit SignalLemonXApprove(_token, _spender, _amount, action);
     }
 
     function approve(address _token, address _spender, uint256 _amount) external onlyAdmin {
@@ -240,7 +240,7 @@ contract Timelock is ITimelock {
     {
         bytes32 action = keccak256(abi.encodePacked("withdrawToken", _target, _token, _receiver, _amount));
         _setPendingAction(action);
-        emit SignalWithdrawToken(_target, _token, _receiver, _amount, action);
+        emit SignalLemonXWithdrawToken(_target, _token, _receiver, _amount, action);
     }
 
     function withdrawToken(address _target, address _token, address _receiver, uint256 _amount) external onlyAdmin {
@@ -253,7 +253,7 @@ contract Timelock is ITimelock {
     function signalSetGov(address _target, address _gov) external override onlyAdmin {
         bytes32 action = keccak256(abi.encodePacked("setGov", _target, _gov));
         _setPendingAction(action);
-        emit SignalSetGov(_target, _gov, action);
+        emit SignalSetLemonXGov(_target, _gov, action);
     }
 
     function setGov(address _target, address _gov) external onlyAdmin {
@@ -266,7 +266,7 @@ contract Timelock is ITimelock {
     function signalSetHandler(address _target, address _handler, bool _isActive) external onlyAdmin {
         bytes32 action = keccak256(abi.encodePacked("setHandler", _target, _handler, _isActive));
         _setPendingAction(action);
-        emit SignalSetHandler(_target, _handler, _isActive, action);
+        emit SignalSetLemonXHandler(_target, _handler, _isActive, action);
     }
 
     function setHandler(address _target, address _handler, bool _isActive) external onlyAdmin {
@@ -282,7 +282,7 @@ contract Timelock is ITimelock {
     {
         bytes32 action = keccak256(abi.encodePacked("setPriceFeed", _vault, _orderManager, _utils, _priceFeed));
         _setPendingAction(action);
-        emit SignalSetPriceFeed(_vault, _priceFeed, action);
+        emit SignalSetLemonXPriceFeed(_vault, _priceFeed, action);
     }
 
     function setPriceFeed(address _vault, address _orderManager, address _utils, address _priceFeed)
@@ -300,7 +300,7 @@ contract Timelock is ITimelock {
     function signalRedeemUsdl(address _vault, address _token, uint256 _amount) external onlyAdmin {
         bytes32 action = keccak256(abi.encodePacked("redeemUsdl", _vault, _token, _amount));
         _setPendingAction(action);
-        emit SignalRedeemUsdl(_vault, _token, _amount);
+        emit SignalRedeemLemonXUsdl(_vault, _token, _amount);
     }
 
     function redeemUsdl(address _vault, address _token, uint256 _amount) external onlyAdmin {
@@ -349,7 +349,7 @@ contract Timelock is ITimelock {
 
         _setPendingAction(action);
 
-        emit SignalVaultSetTokenConfig(
+        emit SignalLemonXVaultSetTokenConfig(
             _vault,
             _token,
             _tokenDecimals,
@@ -409,7 +409,7 @@ contract Timelock is ITimelock {
     function _setPendingAction(bytes32 _action) private {
         require(pendingActions[_action] == 0, "Timelock: action already signalled");
         pendingActions[_action] = block.timestamp + buffer;
-        emit SignalPendingAction(_action);
+        emit SignalPendingLemonXAction(_action);
     }
 
     function _validateAction(bytes32 _action) private view {
@@ -420,6 +420,6 @@ contract Timelock is ITimelock {
     function _clearAction(bytes32 _action) private {
         require(pendingActions[_action] != 0, "Timelock: invalid _action");
         delete pendingActions[_action];
-        emit ClearAction(_action);
+        emit ClearLemonXAction(_action);
     }
 }
