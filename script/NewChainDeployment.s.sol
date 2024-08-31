@@ -24,7 +24,7 @@ contract NewChainDeployment is Script {
     uint256 constant maxAllowedDelta = 150;
     uint256 constant llpCooldownDuration = 3600;
     uint256 constant maxPoolVaule = 10 ** 36; //1 million
-    uint256 constant minExecutionFeeMarketOrder = 400000000000000;
+    uint256 constant minExecutionFeeMarketOrder = 50_000_000_000_000_000;
     uint256 constant minExecutionFeeLimitOrder = 0;
     uint256 constant depositFee = 10;
     uint256 constant maxProfitMultiplier = 5;
@@ -33,19 +33,19 @@ contract NewChainDeployment is Script {
     uint256 constant maxTimeDelay = 180;
     uint256 constant liquidationFeeUsd = 4 * 10 ** 30;
     uint256 constant liquidationFactor = 70;
-    uint256 constant maxGlobalLongSizeEth = 20000; // changed
-    uint256 constant maxGlobalShortSizeEth = 20000; // changed
-    uint256 constant maxGlobalLongSizeBtc = 30000; // changed
-    uint256 constant maxGlobalShortSizeBtc = 30000; // changed
-    uint256 constant oiImbalanceThreshold = 100000; // changed
+    uint256 constant maxGlobalLongSizeEth = 4_000;
+    uint256 constant maxGlobalShortSizeEth = 4_000;
+    uint256 constant maxGlobalLongSizeBtc = 4_000;
+    uint256 constant maxGlobalShortSizeBtc = 4_000;
+    uint256 constant oiImbalanceThreshold = 10_000;
     address[] rewardTrackerDepositToken;
     uint256 constant borrowingExponent = 1;
     uint256 constant borrowingInterval = 60;
-    uint256 constant borrowingRateFactor = 1000000;
+    uint256 constant borrowingRateFactor = 0;
     uint256 constant fundingExponent = 1;
     uint256 constant fundingInterval = 60;
     uint256 constant fundingRateFactor = 24353121;
-    uint256 constant poolSafetyFactorInBps = 10000;
+    uint256 constant poolSafetyFactorInBps = 10_000;
     uint256 constant minPurchaseUsdMarketOrder = 95 * 10 ** 5;
     uint256 constant minPurchaseUsdLimitOrder = 95 * 10 ** 5;
     uint256 constant minProfitTime = 60;
@@ -53,6 +53,15 @@ contract NewChainDeployment is Script {
     uint256 public mintBurnFeeBasisPoints = 30; // 0.3%
     uint256 public marginFeeBasisPoints = 10; // 0.1%
     uint256 public maxLeverage = vm.envUint("MAX_LEVERAGE");
+    uint256 public maintanenceMarginForBTC = 100;
+    uint256 public maintanenceMarginForETH = 100;
+    uint256 public slippageForBTC = 350;
+    uint256 public slippageForETH = 350;
+    uint256 public maintanenceMarginForBTC = 100;
+    uint256 public globalLongSizesLimitBpsForBTC = 4000;
+    uint256 public globalShortSizesLimitBpsForBTC = 4000;
+    uint256 public globalLongSizesLimitBpsForETH = 4000;
+    uint256 public globalShortSizesLimitBpsForETH = 4000;
 
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY_ADMIN");
@@ -149,8 +158,8 @@ contract NewChainDeployment is Script {
 
     function deployUtils(Vault vault, PriceFeed pricefeed, address tierBasedTradingFees) public returns (Utils) {
         Utils utils = new Utils(vault, pricefeed, tierBasedTradingFees);
-        utils.setMaintanenceMargin(vm.envAddress("BTC"), 200);
-        utils.setMaintanenceMargin(vm.envAddress("ETH"), 200);
+        utils.setMaintanenceMargin(vm.envAddress("BTC"), maintanenceMarginForBTC);
+        utils.setMaintanenceMargin(vm.envAddress("ETH"), maintanenceMarginForETH);
         // utils.setMaintanenceMargin(vm.envAddress("MERL"), 200);
         // utils.setTokenPremiumPositionFee(vm.envAddress("MERL"), 10);
         console.log("Utils deployed at address: ", address(utils));
@@ -203,8 +212,8 @@ contract NewChainDeployment is Script {
         priceFeed.setUpdater(vm.envAddress("LP_ORDER_UPDATER"));
 
         // priceFeed.setSlippage(vm.envAddress("MERL"), 500);
-        priceFeed.setSlippage(vm.envAddress("BTC"), 350);
-        priceFeed.setSlippage(vm.envAddress("ETH"), 350);
+        priceFeed.setSlippage(vm.envAddress("BTC"), slippageForBTC);
+        priceFeed.setSlippage(vm.envAddress("ETH"), slippageForETH);
         console.log("PriceFeed initialized");
         return priceFeed;
     }
@@ -269,9 +278,9 @@ contract NewChainDeployment is Script {
             hasDynamicFees
         );
         // set setGlobalLongSizesLimitBps & setGlobalShortSizesLimitBps
-        vault.setGlobalLongSizesLimitBps(vm.envAddress("ETH"), 2000);
-        vault.setGlobalLongSizesLimitBps(vm.envAddress("BTC"), 2000);
-        vault.setGlobalShortSizesLimitBps(vm.envAddress("ETH"), 2000);
-        vault.setGlobalShortSizesLimitBps(vm.envAddress("BTC"), 2000);
+        vault.setGlobalLongSizesLimitBps(vm.envAddress("ETH"), globalLongSizesLimitBpsForETH);
+        vault.setGlobalLongSizesLimitBps(vm.envAddress("BTC"), globalLongSizesLimitBpsForBTC);
+        vault.setGlobalShortSizesLimitBps(vm.envAddress("ETH"), globalShortSizesLimitBpsForETH);
+        vault.setGlobalShortSizesLimitBps(vm.envAddress("BTC"), globalShortSizesLimitBpsForBTC);
     }
 }
