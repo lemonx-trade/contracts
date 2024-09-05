@@ -57,7 +57,6 @@ contract NewChainDeployment is Script {
     uint256 public maintanenceMarginForETH = 100;
     uint256 public slippageForBTC = 350;
     uint256 public slippageForETH = 350;
-    uint256 public maintanenceMarginForBTC = 100;
     uint256 public globalLongSizesLimitBpsForBTC = 4000;
     uint256 public globalShortSizesLimitBpsForBTC = 4000;
     uint256 public globalLongSizesLimitBpsForETH = 4000;
