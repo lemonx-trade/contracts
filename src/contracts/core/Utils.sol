@@ -36,6 +36,18 @@ contract Utils is IUtils, Governable {
     mapping(address => uint256) public override maintanenceMargin;
     mapping(address => int256) public override tokenPremiumPositionFee;
 
+    struct LeverageTier {
+        uint256 lowerBound; // Inclusive lower bound of leverage
+        uint256 upperBound; // Exclusive upper bound of leverage
+        uint256 feeBasisPoints; // Fee basis points for this tier
+    }
+
+    // Array to store leverage tiers
+    LeverageTier[] public leverageTiers;
+
+    // Event to emit when leverage tiers are updated
+    event LeverageTiersUpdated(LeverageTier[] tiers);
+
     event LemonXFees(
         address account,
         address indexToken,
@@ -53,6 +65,12 @@ contract Utils is IUtils, Governable {
         vault = _vault;
         priceFeed = _pricefeed;
         tierBasedTradingFees = ITierBasedTradingFees(_tierBasedTradingFees);
+
+        leverageTiers.push(LeverageTier({lowerBound: 0, upperBound: 10, feeBasisPoints: 10}));
+        leverageTiers.push(LeverageTier({lowerBound: 10, upperBound: 20, feeBasisPoints: 9}));
+        leverageTiers.push(LeverageTier({lowerBound: 20, upperBound: 30, feeBasisPoints: 8}));
+        leverageTiers.push(LeverageTier({lowerBound: 30, upperBound: 40, feeBasisPoints: 5}));
+        leverageTiers.push(LeverageTier({lowerBound: 40, upperBound: 50, feeBasisPoints: 2}));
     }
 
     function setTier1Size(uint256 _tier1Size) external onlyGov {
@@ -125,6 +143,69 @@ contract Utils is IUtils, Governable {
 
     function setTokenPremiumPositionFee(address _indexToken, int256 _basisPoints) external onlyGov {
         tokenPremiumPositionFee[_indexToken] = _basisPoints;
+    }
+
+    /**
+     * @notice Sets the entire leverage tiers.
+     * @param _tiers The array of leverage tiers to set.
+     *
+     * Requirements:
+     * - Only callable by `gov`.
+     * - Tiers must be non-overlapping and sorted by lowerBound in ascending order.
+     */
+    // Setter functions for leverage tiers
+    function setLeverageTiers(LeverageTier[] memory _tiers) external onlyGov {
+        require(_tiers.length > 0, "Utils: At least one tier required");
+
+        for (uint256 i = 0; i < _tiers.length; i++) {
+            require(_tiers[i].lowerBound < _tiers[i].upperBound, "Utils: Invalid tier bounds");
+            if (i > 0) {
+                require(
+                    _tiers[i].lowerBound == leverageTiers[i - 1].upperBound,
+                    "Utils: Tiers must be contiguous and non-overlapping"
+                );
+            }
+        }
+
+        delete leverageTiers;
+
+        for (uint256 i = 0; i < _tiers.length; i++) {
+            leverageTiers.push(_tiers[i]);
+        }
+
+        emit LeverageTiersUpdated(_tiers);
+    }
+    /**
+     * @notice Adds a new leverage tier at the end.
+     * @param _lowerBound Inclusive lower bound of leverage.
+     * @param _upperBound Exclusive upper bound of leverage.
+     * @param _feeBasisPoints Fee basis points for this tier.
+     *
+     * Requirements:
+     * - Only callable by `gov`.
+     * - The new tier must directly follow the last existing tier.
+     */
+
+    function addLeverageTier(uint256 _lowerBound, uint256 _upperBound, uint256 _feeBasisPoints) external onlyGov {
+        require(_lowerBound < _upperBound, "Utils: Invalid tier bounds");
+        if (leverageTiers.length > 0) {
+            LeverageTier storage lastTier = leverageTiers[leverageTiers.length - 1];
+            require(_lowerBound == lastTier.upperBound, "Utils: New tier must follow the last tier");
+        }
+
+        leverageTiers.push(
+            LeverageTier({lowerBound: _lowerBound, upperBound: _upperBound, feeBasisPoints: _feeBasisPoints})
+        );
+
+        emit LeverageTiersUpdated(leverageTiers);
+    }
+
+    function removeLastLeverageTier() external onlyGov {
+        require(leverageTiers.length > 1, "Utils: At least one tier required");
+
+        leverageTiers.pop();
+
+        emit LeverageTiersUpdated(leverageTiers);
     }
 
     function validateIncreasePosition(
@@ -282,12 +363,12 @@ contract Utils is IUtils, Governable {
 
         uint256 leverage = _sizeDelta / _collateralDeltaUsd;
         uint256 feeBasisPoints = vault.marginFeeBasisPoints();
-        if (leverage > 40) {
-            feeBasisPoints = 2;
-        } else if (leverage > 30) {
-            feeBasisPoints = 5;
-        } else if (leverage > 20) {
-            feeBasisPoints = 8;
+        // Iterate through leverage tiers to find the applicable fee
+        for (uint256 i = 0; i < leverageTiers.length; i++) {
+            if (leverage >= leverageTiers[i].lowerBound && leverage < leverageTiers[i].upperBound) {
+                feeBasisPoints = leverageTiers[i].feeBasisPoints;
+                break;
+            }
         }
         uint256 totalPositionFee;
         if (tokenPremiumPositionFee[_indexToken] > 0) {

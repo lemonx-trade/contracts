@@ -20,3 +20,4 @@ test/debugHelper.t.sol
 
 lcov.info
 
+.env

@@ -33,10 +33,10 @@ contract NewChainDeployment is Script {
     uint256 constant maxTimeDelay = 180;
     uint256 constant liquidationFeeUsd = 4 * 10 ** 30;
     uint256 constant liquidationFactor = 70;
-    uint256 constant maxGlobalLongSizeEth = 4_000;
-    uint256 constant maxGlobalShortSizeEth = 4_000;
-    uint256 constant maxGlobalLongSizeBtc = 4_000;
-    uint256 constant maxGlobalShortSizeBtc = 4_000;
+    uint256 constant maxGlobalLongSizeEth = 10_000; // made it 10000
+    uint256 constant maxGlobalShortSizeEth = 10_000; // made it 10000
+    uint256 constant maxGlobalLongSizeBtc = 10_000; // made it 10000
+    uint256 constant maxGlobalShortSizeBtc = 10_000; // made it 10000
     uint256 constant oiImbalanceThreshold = 10_000;
     address[] rewardTrackerDepositToken;
     uint256 constant borrowingExponent = 1;
@@ -57,10 +57,10 @@ contract NewChainDeployment is Script {
     uint256 public maintanenceMarginForETH = 100;
     uint256 public slippageForBTC = 350;
     uint256 public slippageForETH = 350;
-    uint256 public globalLongSizesLimitBpsForBTC = 4000;
-    uint256 public globalShortSizesLimitBpsForBTC = 4000;
-    uint256 public globalLongSizesLimitBpsForETH = 4000;
-    uint256 public globalShortSizesLimitBpsForETH = 4000;
+    uint256 public globalLongSizesLimitBpsForBTC = 100_000; // made it 100k
+    uint256 public globalShortSizesLimitBpsForBTC = 100_000; // made it 100k
+    uint256 public globalLongSizesLimitBpsForETH = 100_000; // made it 100k
+    uint256 public globalShortSizesLimitBpsForETH = 100_000; // made it 100k
 
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY_ADMIN");
