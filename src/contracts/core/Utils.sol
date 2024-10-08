@@ -161,7 +161,7 @@ contract Utils is IUtils, Governable {
             require(_tiers[i].lowerBound < _tiers[i].upperBound, "Utils: Invalid tier bounds");
             if (i > 0) {
                 require(
-                    _tiers[i].lowerBound == leverageTiers[i - 1].upperBound,
+                    _tiers[i].lowerBound == _tiers[i - 1].upperBound,
                     "Utils: Tiers must be contiguous and non-overlapping"
                 );
             }
