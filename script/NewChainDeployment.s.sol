@@ -204,8 +204,13 @@ contract NewChainDeployment is Script {
         console.log("PriceFeed deployed at address: ", address(priceFeed));
         // be mindfull of the token to id mappign order in pricefeed
         priceFeed.updateTokenIdMapping(vm.envAddress("USDC"), vm.envBytes32("USDC_PYTH_FEED_MAINNET")); // using same priceId because unused
-        priceFeed.updateTokenIdMapping(vm.envAddress("ETH"), vm.envBytes32("ETH_PYTH_FEED_MAINNET")); // order change here
         priceFeed.updateTokenIdMapping(vm.envAddress("BTC"), vm.envBytes32("BTC_PYTH_FEED_MAINNET"));
+        priceFeed.updateTokenIdMapping(vm.envAddress("ETH"), vm.envBytes32("ETH_PYTH_FEED_MAINNET")); // I have changed the order here to match the order in the vault and so from now onwards passing ETH first and BTC second in cloud services like keeper bot in the env variable name `_INDEX_TOKENS`.
+        // Please note that when contracts were deployed on core, it was ETH first and BTC second. So, if you are using the same env variables
+        // for keeper bot on different chain, you need to change the order of index tokens in the env variable `{CHAIN}_INDEX_TOKENS` to BTC first and ETH second.
+        // But please note that for the current chain, the order of index tokens in the `_INDEX_TOKENS` env variable should be ETH first and BTC second.
+        // So, basically for other chains, the order would be different than that of the current chain CORE i.e. BTC first and ETH second.
+
         // priceFeed.updateTokenIdMapping(vm.envAddress("MERL"), vm.envBytes32("MERL_PYTH_PRICE_ID")); // priceId does not matter
         // set lp market order as updater as well
         priceFeed.setUpdater(vm.envAddress("LP_ORDER_UPDATER"));
