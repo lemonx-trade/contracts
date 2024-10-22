@@ -10,3 +10,7 @@ solc = "0.8.19"
 
 [etherscan]
 core-testnet = { key = "64f20a16c0904021b26e8a3cf4485c3a", chain = "1115", url = "https://api.test.btcs.network/api" , enabled=true}
+
+[rpc_endpoints.coredao]
+url = "https://rpc.coredao.org"
+gas_price = "50000000000" # Sets gas price to 50 Gwei ( current price is 30 gwei)

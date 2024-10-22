@@ -57,10 +57,10 @@ contract NewChainDeployment is Script {
     uint256 public maintanenceMarginForETH = 100;
     uint256 public slippageForBTC = 350;
     uint256 public slippageForETH = 350;
-    uint256 public globalLongSizesLimitBpsForBTC = 4000;
-    uint256 public globalShortSizesLimitBpsForBTC = 4000;
-    uint256 public globalLongSizesLimitBpsForETH = 4000;
-    uint256 public globalShortSizesLimitBpsForETH = 4000;
+    uint256 public globalLongSizesLimitBpsForBTC = 10_000;
+    uint256 public globalShortSizesLimitBpsForBTC = 10_000;
+    uint256 public globalLongSizesLimitBpsForETH = 10_000;
+    uint256 public globalShortSizesLimitBpsForETH = 10_000;
 
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY_ADMIN");
