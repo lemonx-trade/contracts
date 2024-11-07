@@ -73,7 +73,7 @@ contract ListNewPerp is Script {
                 globalLongSizesLimitBps: 5_000,
                 globalShortSizesLimitBps: 5_000
             }),
-            500, // Slippage
+            1000, // Slippage
             700, // Maintenance Margin
             BorrowingParams({borrowingExponent: 1, borrowingInterval: 60, borrowingRateFactor: 0}),
             FundingParams({fundingExponent: 1, fundingInterval: 60, fundingRateFactor: 24_353_121}),
@@ -93,7 +93,7 @@ contract ListNewPerp is Script {
                 globalLongSizesLimitBps: 5_000,
                 globalShortSizesLimitBps: 5_000
             }),
-            500, // Slippage
+            1000, // Slippage
             700, // Maintenance Margin
             BorrowingParams({borrowingExponent: 1, borrowingInterval: 60, borrowingRateFactor: 0}),
             FundingParams({fundingExponent: 1, fundingInterval: 60, fundingRateFactor: 24_353_121}),

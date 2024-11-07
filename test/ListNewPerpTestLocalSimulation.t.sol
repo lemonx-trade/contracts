@@ -7,7 +7,7 @@ import "../src/contracts/core/Vault.sol";
 import "../src/contracts/core/PriceFeed.sol";
 import "../src/contracts/core/Utils.sol";
 
-contract ListNewPerpTest is Test {
+contract ListNewPerpTestLocalSimulation is Test {
     ListNewPerp script;
     Vault vault;
     PriceFeed priceFeed;
@@ -80,7 +80,7 @@ contract ListNewPerpTest is Test {
             5_000, // globalShortSizesLimitBps
             500, // slippage
             700, // maintenanceMargin
-            0 // premiumPositionFee
+            5 // premiumPositionFee
         );
 
         // Test for POPCAT
@@ -96,7 +96,7 @@ contract ListNewPerpTest is Test {
             5_000, // globalShortSizesLimitBps
             500, // slippage
             700, // maintenanceMargin
-            0 // premiumPositionFee
+            5 // premiumPositionFee
         );
     }
 
